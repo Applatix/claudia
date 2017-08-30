@@ -18,7 +18,6 @@ from multiprocessing.dummy import Pool
 CONTAINER_NAME = "claudia"
 SRC_ROOT = os.path.realpath(os.path.dirname(__file__))
 DEFAULT_BUILDER_IMAGE_NAME = "claudia-builder"
-S3_PATH = "s3://ax-public/claudia/docs"
 with open(os.path.join(SRC_ROOT, 'VERSION')) as _f:
     VERSION = _f.read().strip()
 
@@ -104,7 +103,7 @@ def which(program):
         pass
     return False
 
-def build_docs(builder_image, aws_env=None, publish=False):
+def build_docs(builder_image):
     """Builds the documentation"""
     if which('docker'):
         run_cmd("docker run --rm -v {}:/src --workdir /src {} mkdocs build".format(SRC_ROOT, builder_image))
@@ -113,10 +112,6 @@ def build_docs(builder_image, aws_env=None, publish=False):
     else:
         raise Exception("Either docker or mkdocs needs to be installed to build documentation")
     logger.info("Documentation built at: %s/site", SRC_ROOT)
-    if publish:
-        env = copy.deepcopy(os.environ)
-        env.update(aws_env)
-        run_cmd("aws s3 sync site {} --acl public-read".format(S3_PATH), env=env)
 
 def build_container_image(image_tag):
     """Builds the the final container image"""
@@ -217,7 +212,6 @@ def main():
     else:
         builder_image = DEFAULT_BUILDER_IMAGE_NAME
 
-    aws_env = get_aws_env(args)
     if 'ami' in args.component:
         verify_packer_version()
 
@@ -236,7 +230,7 @@ def main():
         async_res.get()
 
     if 'docs' in args.component:
-        build_docs(builder_image, aws_env=aws_env, publish=args.publish)
+        build_docs(builder_image)
     image_tag = "{}:{}".format(CONTAINER_NAME, args.image_version)
     if 'container' in args.component:
         build_container_image(image_tag)
@@ -245,6 +239,7 @@ def main():
             run_cmd("docker tag {} {}".format(image_tag, registry_image_tag))
             run_cmd("docker push {}".format(registry_image_tag))
     if 'ami' in args.component:
+        aws_env = get_aws_env(args)
         build_ami(image_tag, aws_env)
 
 if __name__ == '__main__':

@@ -1,39 +1,37 @@
 # Claudia
 
-Claudia is a cost and usage analytics solution that provides insights into your AWS cloud spending.
+Claudia is a free and open source cost and usage analytics solution that provides insights into your AWS cloud spending.
 
 ![Claudia Screenshot](docs/report-screenshot.png)
 
-# Build Instructions
+# Installation
 
-### Build Requirements
+Official Claudia releases are made available as freely available AMIs on the AWS Marketplace. Visit the [Claudia marketplace page](https://aws.amazon.com/marketplace/pp/B06XVZ9VS9) to launch a Claudia instance in your account.
+
+# Setup
+
+Login with the username `admin` and the EC2 instance ID as the password. Follow setup instructions at [https://applatix.github.io/claudia](https://applatix.github.io/claudia).
+
+# Building
+
+### Requirements
  * docker
  * python
- * awscli (if publishing docs or building AMI)
+ * packer (for building AMI)
 
-### Build Container
+### Build Claudia Container Image
+Builds the claudia container image (default: `claudia:latest`)
 ```
 ./build.py
 ```
 
-### Build Docs
-```
-./build.py -c docs
-```
-Optionally publish the docs to S3 bucket. Requires your profile has write permissions to the `ax-public` bucket.
-
-```
-./build.py -c docs --publish
-```
-
 ### Build AMI
-The AMI build process uses [packer](https://packer.io) to create new AMI.
-
+Build an AMI image based on the local claudia container image (default: `claudia:latest`).
 ```
-./build.py --all --aws-profile <profile_name>
+./build.py -c ami --aws-profile <profile_name>
 ```
 
-# Run Instructions
+# Developing
 
 ### Running Locally
 
@@ -57,7 +55,7 @@ Debug mode will:
  * Expose the following ports:
    * Postgres 5432
    * InfluxDB 8086
-   * InfluxDB admin UI 8086
+   * InfluxDB admin UI 8083
    * ingestd 8081
    * claudiad 80/443
  * Leave the claudia container running in the event that the process dies, for the purpose of bashing into the container to restart the process manually or inspect any files.
@@ -69,7 +67,7 @@ Debug mode will:
 docker-compose -f docker-compose-dev.yml up
 ```
 
-Development mode starts only the postgres and influxdb containers and exposes their ports. This mode allows you to run ingestd and claudiad manually (e.g. `go run`) and connect to localhost IP addresses.
+Development mode starts only the database containers (postgres and influxdb) and exposes their ports. This mode allows you to run ingestd and claudiad manually (e.g. `go run`) and connect to localhost IP addresses.
 
 To run ingestd manually, and connect it to the localhost postgres and influxdb:
 
@@ -83,7 +81,7 @@ To run claudiad manually, connect it to the localhost postgres, influxdb, and in
 USERDB_HOST=localhost:5432 POSTGRES_DB=userdb POSTGRES_PASSWORD=my-secret-pw go run claudiad/main.go --costdbURL http://localhost:8086 --ingestdURL http://localhost:8081 --assets ./ui/dist/ --insecure --port 8080
 ```
 
-# Editing Documentation
+# Documentation
 
 The documentation site is built using [MkDocs](http://www.mkdocs.org/), a static site generator that creates static documentation from markdown files.
 
@@ -94,10 +92,17 @@ pip install mkdocs mkdocs-bootswatch
 
 ### Editing and previewing changes
 
-Run mkdocs server and visit [http://localhost:8000](http://localhost:8000) to preview your changes.
+Run the mkdocs server and visit [http://localhost:8000](http://localhost:8000) to preview your changes.
 
 ```
 mkdocs serve
 ```
 
 Edit `mkdocs.yml` to change layout, headers, theme and other global settings. Edit markdown files under the `docs` directory to update and add new content.
+
+### Publishing
+
+Build the docs, which will generate static HTML into the `./site/` directory. Commit the contents of `./site/ ` into the `gh-pages` branch to reflect on the [Claudia project page](https://applatix.github.io/claudia).
+```
+./build.py -c docs
+```
