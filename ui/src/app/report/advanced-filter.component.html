@@ -1,7 +1,0 @@
-<div class="sub-filters">
-    <h4>{{filter.display_name}}</h4>
-    <ul *ngIf="filter">
-        <li (click)="filter.selectAll()" [ngClass]="{'selectedTab': filter.selectedDimensions.size === 0 || filter.dimensions.length === filter.selectedDimensions.size}">All {{filter.display_name}}</li>
-        <li *ngFor="let option of filter.dimensions" (click)="filter.toggleSelection(option)" [ngClass]="{'selectedTab': filter.selectedDimensions.has(option.name)}">{{option.display_name}}</li>
-    </ul>
-</div>
