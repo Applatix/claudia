@@ -1,0 +1,244 @@
+<div class="row">
+    <div class="columns small-3 options" *ngIf="filtersLoaded">
+        <div class="options-row" *ngIf="dateRange">
+            <ax-date-range [range]="dateRange"></ax-date-range>
+        </div>
+        <div class="options-row">
+            <h4>Interval</h4>
+            <ul *ngIf="defaultIntervals && defaultIntervals.length > 0" class="axc-list-group dib">
+                <li class="axc-list-group__item dib" *ngFor="let item of defaultIntervals;" (click)="setInterval(item)" [ngClass]="{'active': item.key===interval.key}">
+                    {{item.display_name}}
+                </li>
+            </ul>
+        </div>
+        <div class="options-row">
+            <h4>Metric</h4>
+            <ul *ngIf="defaultMetrics && defaultMetrics.length > 0" class="axc-list-group">
+                <li class="axc-list-group__item" *ngFor="let item of defaultMetrics;" (click)="updateMetric(item)" [ngClass]="{'active': item===metric}">
+                    {{item}}
+                </li>
+                <li class="axc-list-group__item" *ngFor="let item of getUsageMetricOptions();" (click)="updateMetric(item)" [ngClass]="{'active': item===metric}">
+                    {{item}}
+                </li>
+            </ul>
+        </div>
+        <div class="options-row" *ngIf="defaultGroupByOptions?.length">
+            <h4>Group By</h4>
+            <ul *ngIf="defaultGroupByOptions && defaultGroupByOptions.length > 0" class="axc-list-group">
+                <li class="axc-list-group__item" *ngFor="let item of defaultGroupByOptions;" [ngClass]="{'active': item.key===grouping.key}"
+                    (click)="updateGroupBy(item)">
+                    {{item.display_name}}
+                </li>
+                <li class="axc-list-group__item" *ngFor="let item of getAdvancedGroupByOptions();" [ngClass]="{'active': item.key===grouping.key}"
+                    (click)="updateGroupBy(item)">
+                    {{item.display_name}}
+                </li>
+            </ul>
+        </div>
+
+        <div class="options-row text-right">
+            <button class="ax-btn ax-btn--base" (click)="runReport();">Apply</button>
+            <button class="ax-btn ax-btn--base-o" (click)="reset();">Reset</button>
+        </div>
+        <div class="options-row text-right margin-top-large" *ngIf="reportObj">
+            <p class="status" [ngClass]="{'status-current': reportObj.status === 'current', 'status-error': reportObj.status === 'error', 'status-processing': reportObj.status === 'processing'}">Status: {{reportObj.status}}
+                <br>
+                <span *ngIf="reportObj.status_detail">{{reportObj.status_detail}}</span>
+            </p>
+        </div>
+    </div>
+
+    <div class="columns small-9">
+        <div class="row" *ngIf="reportObj">
+            <div class="columns small-12 margin-bottom-large" *ngIf="reportObj.status !== 'current' && reportObj.status !== 'processing'">
+                <div class="status-box">Status: {{reportObj.status}}. <span *ngIf="reportObj.status_detail">Details: {{reportObj.status_detail}}</span></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="columns large-9 small-9 medium-9 tags" *ngIf="selectedAccounts.size > 0 || selectedRegions.size > 0 || selectedServices.size > 0">
+                <axc-tags-filter [tags]="accountFilters?.dimensions" [selectedTags]="selectedAccounts" [typeName]="'Accounts'" (onRemoveTag)="toggleAccountSelection($event)"
+                    (onRefresh)="runReport()"></axc-tags-filter>
+                <axc-tags-filter [tags]="regionFilters?.dimensions" [selectedTags]="selectedRegions" [typeName]="'Regions'" (onRemoveTag)="toggleRegionSelection($event)"
+                    (onRefresh)="runReport()"></axc-tags-filter>
+                <axc-tags-filter [tags]="servicesFilters?.dimensions" [selectedTags]="selectedServices" [typeName]="'Services'" (onRemoveTag)="toggleServiceSelection($event)"
+                    (onRefresh)="runReport()"></axc-tags-filter>
+            </div>
+            <div class="columns large-3 small-3 medium-3" *ngIf="selectedAccounts.size > 0 || selectedRegions.size > 0 || selectedServices.size > 0">
+                <button (click)="toggleFilter()" class="ax-btn filter-button"><i class="fa fa-filter" aria-hidden="true"></i>&nbsp;&nbsp;Select Filters</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="columns large-9 small-9 medium-9">
+                <axc-switch [options]="[{value: 'STACKED', title: 'Stacked'}, {value: 'LINE', title: 'Line'}, {value: 'DONUT', title: 'Donut'}]"
+                    [selectedValue]="graphType" (onOptionChanged)="setGraphType($event)" *ngIf="!noData && !loading && sumTotal > 0 "></axc-switch>
+            </div>
+            <div class="columns large-3 small-3 medium-3" *ngIf="selectedAccounts.size === 0 && selectedRegions.size === 0 && selectedServices.size === 0">
+                <button (click)="toggleFilter()" class="ax-btn filter-button"><i class="fa fa-filter" aria-hidden="true"></i>&nbsp;&nbsp;Select Filters</button>
+            </div>
+        </div>
+
+        <div class="row" *ngIf="reportData && !noData && !loading && sumTotal > 0 ">
+            <div class="columns">
+                <div class="the-graph margin-bottom-regular">
+                    <axc-data-chart [data]="reportData"
+                                    name="reportDonut"
+                                    [group]="grouping.key"
+                                    [type]="graphType"
+                                    [metric]="metric"
+                                    [intervalMetric]="interval.key"></axc-data-chart>
+                </div>
+            </div>
+        </div>
+
+        <div class="row summary-data margin-top-regular margin-bottom-large" *ngIf="tableData">
+            <div class="columns large-6 small-6 medium-6 header header-teal">{{appliedGrouping.display_name}}</div>
+            <div class="columns large-6 small-6 medium-6 header cost-header header-teal" *ngIf="countMetricSelected">Count</div>
+            <div class="columns large-6 small-6 medium-6 header cost-header header-teal" *ngIf="!countMetricSelected && !usageMetricSelected">Cost($)</div>
+            <div class="columns large-6 small-6 medium-6 header cost-header header-teal" *ngIf="usageMetricSelected">{{appliedMetric}}</div>
+            <template ngFor let-dataItem [ngForOf]="tableData" let-i="index" let-odd="odd">
+                <div class="columns large-6 small-6 medium-6" [class.odd]="odd">
+                    <a (click)="doDrillDown(dataItem)" *ngIf="dataItem[2].name">{{dataItem[0]}}</a>
+                    <span (click)="doDrillDown(dataItem)" *ngIf="!dataItem[2].name">{{dataItem[0]}}</span>
+                </div>
+                <div class="columns large-6 small-6 medium-6 data" *ngIf="countMetricSelected || usageMetricSelected" [class.odd]="odd">
+                    {{dataItem[1] | number}}
+                </div>
+                <div class="columns large-6 small-6 medium-6 data" *ngIf="!countMetricSelected && !usageMetricSelected" [class.odd]="odd">
+                    {{dataItem[1] | currency:'USD':true}}
+                </div>
+            </template>
+            <div class="columns large-6 small-6 medium-6 header">Total</div>
+            <div class="columns large-6 small-6 medium-6 header cost-header" *ngIf="countMetricSelected || usageMetricSelected">{{sumTotal | number}}</div>
+            <div class="columns large-6 small-6 medium-6 header cost-header" *ngIf="!countMetricSelected && !usageMetricSelected">{{sumTotal | currency:'USD':true}}</div>
+        </div>
+
+        <div *ngIf="noData && !loading">
+            <h4>No data available for selected criteria</h4>
+        </div>
+
+        <div *ngIf="loading" class="loading">
+            <div class="pacman"></div>
+            <div class="dot">$&nbsp;$&nbsp;$&nbsp;$</div>
+        </div>
+    </div>
+</div>
+
+<ax-sliding-panel [show]="showFilters" (closeButtonClick)="toggleFilter()" *ngIf="filtersLoaded">
+    <div class="row tab-selector">
+        <div [ngClass]="{'selected-tab': filterCategory === 'BASIC'}" class="columns small-3" (click)="filterCategory = 'BASIC'">Basic</div>
+        <div *ngIf="selectedServices.size === 1" [ngClass]="{'selected-tab': filterCategory === 'ADVANCED'}" class="columns small-3"
+            (click)="filterCategory = 'ADVANCED'">Advanced</div>
+        <div [ngClass]="{'selected-tab': filterCategory === 'RESOURCE'}" class="columns small-3" (click)="filterCategory = 'RESOURCE'">Resource Tags</div>
+    </div>
+
+    <div class="filter-container" [ngClass]="{'show': filterCategory === 'BASIC', 'hide': filterCategory !== 'BASIC'}">
+        <h4>Note: Updating basic filters will impact your selections and available filters in Advanced and Resource Tag filters.</h4>
+        <div class="section">
+            <h3>AWS Accounts <span *ngIf="selectedAccounts.size">({{selectedAccounts.size}} selected)</span>
+                <span *ngIf="!selectedAccounts.size">({{accountFilters.dimensions.length}} selected)</span>
+            </h3>
+            <div class="summary row collapse">
+                <h4 class="columns small-9" (click)="accountExpanded = !accountExpanded">
+                    <i class="fa" [ngClass]="{'fa-angle-down': accountExpanded, 'fa-angle-up': !accountExpanded}"></i> Select
+                    the AWS accounts you want to analyze.</h4>
+                <div class=" columns small-3">
+                    <button class="ax-btn ax-btn--base" (click)="selectAllAccounts();" [ngClass]="{'ax-btn--base': selectedAccounts.size === 0 || accountFilters.dimensions.length === selectedAccounts.size}">All Accounts</button>
+                </div>
+            </div>
+            <div class="selection" [hidden]="!accountExpanded">
+                <button class="ax-btn" *ngFor="let account of accountFilters.dimensions" (click)="toggleAccountSelection(account);" [ngClass]="{'ax-btn--base': selectedAccounts.has(account.name)}">
+                    {{account.display_name}}
+                </button>
+            </div>
+        </div>
+        <div class="section">
+            <h3>Regions <span *ngIf="selectedRegions.size">({{selectedRegions.size}} selected)</span>
+                <span *ngIf="!selectedRegions.size">({{regionFilters.dimensions.length}} selected)</span>
+            </h3>
+            <div class="summary row collapse">
+                <h4 class="columns small-9" (click)="regionsExpanded = !regionsExpanded">
+                    <i class="fa" [ngClass]="{'fa-angle-down': regionsExpanded, 'fa-angle-up': !regionsExpanded}"></i> Select
+                    the AWS regions you want to analyze.</h4>
+                <div class=" columns small-3">
+                    <button class="ax-btn ax-btn--base" (click)="selectAllRegions();" [ngClass]="{'ax-btn--base': selectedRegions.size === 0 || regionFilters.dimensions.length === selectedRegions.size}">All Regions</button>
+                </div>
+            </div>
+            <div class="selection" [hidden]="!regionsExpanded">
+                <button class="ax-btn" *ngFor="let region of regionFilters.dimensions" (click)="toggleRegionSelection(region);" [ngClass]="{'ax-btn--base': selectedRegions.has(region.name)}">
+                    {{region.display_name}}
+                </button>
+            </div>
+        </div>
+        <div class="section">
+            <h3>Services <span *ngIf="selectedServices.size">({{selectedServices.size}} selected)</span>
+                <span *ngIf="!selectedServices.size">({{servicesFilters.dimensions.length}} selected)</span>
+            </h3>
+            <div class="summary row collapse">
+                <h4 class="columns small-9" (click)="servicesExpanded = !servicesExpanded">
+                    <i class="fa" [ngClass]="{'fa-angle-down': servicesExpanded, 'fa-angle-up': !servicesExpanded}"></i>                    Select the AWS services you want to analyze.</h4>
+                <div class=" columns small-3">
+                    <button class="ax-btn ax-btn--base" (click)="selectAllServices();" [ngClass]="{'ax-btn--base': selectedServices.size === 0 || servicesFilters.dimensions.length === selectedServices.size}">All Services</button>
+                </div>
+            </div>
+            <div class="selection" [hidden]="!servicesExpanded">
+                <button class="ax-btn" *ngFor="let service of servicesFilters.dimensions" (click)="toggleServiceSelection(service);" [ngClass]="{'ax-btn--base': selectedServices.has(service.name)}">
+                    {{service.display_name}}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="filter-container" [ngClass]="{'show': filterCategory === 'ADVANCED', 'hide': filterCategory !== 'ADVANCED'}"
+        *ngIf="selectedServices.size === 1">
+        <div class="section">
+            <h3>Advanced Filters</h3>
+            <div class="summary row collapse">
+                <h4 class="columns small-9">
+                    Select the advanced filters to analyze your AWS spending.</h4>
+            </div>
+            <div class="selection">
+                <div class="row advanced collapse">
+                    <div class="columns small-12 panes">
+                        <span *ngFor="let service of getServiceForAdvancedFilter()">
+                            <div class="pane">
+                                <axc-advanced-filter [filter]="dim" *ngFor="let dim of service.dimensions"></axc-advanced-filter>
+                            </div>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="filter-container" [ngClass]="{'show': filterCategory === 'RESOURCE', 'hide': filterCategory !== 'RESOURCE'}">
+        <div class="section">
+            <h3>Resource Tags</h3>
+            <div class="summary row collapse" *ngFor="let tag of resourceTags.dimensions">
+                <h4 class="columns small-5 tag-name" title="{{tag.display_name}}">
+                    {{tag.display_name | trimText:24}}
+                    <span *ngIf="tag.selectedDimensions.size > 0">( {{tag.selectedDimensions.size}} selected)</span>
+                </h4>
+                <div class="columns small-7" *ngIf="tag.dimensions.length > 0">
+                    <input class="tag-ac" min-chars="2" max-num-list="5" [(ngModel)]="tag.filterString" auto-complete [source]="tag.dimensions"
+                        path-to-data="display_name" (valueChanged)="tag.addToSelectedList($event)" placeholder="Enter tag name to find it"
+                        value-property-name="name" [list-formatter]="formatTags" />
+                    <a (click)="tag.selectAll()">Select all</a>
+                </div>
+                <div class="columns small-7" *ngIf="tag.dimensions.length === 0">
+                    No tag values applicable for current filters
+                </div>
+                <div class="selection tag-list columns small-12" *ngIf="tag.selectedTagNames.length">
+                    <ul>
+                        <li *ngFor="let selectedTag of tag.selectedTagNames" title="{{selectedTag}}">{{selectedTag}}<span class="remove" (click)="tag.removeDimensionFromSelection(selectedTag)">X</span></li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="ax-btn ax-btn--base" (click)="toggleFilter();">Apply</button>
+    </div>
+
+</ax-sliding-panel>

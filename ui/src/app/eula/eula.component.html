@@ -1,0 +1,9 @@
+<main class="eula" *ngIf="config">
+    <p>
+        ALL PRODUCTS ARE PROVIDED “AS IS” WITHOUT WARRANTY OF ANY KIND FROM ANYONE, INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE OR NONINFRINGEMENT. FURTHER, APPLATIX DOES NOT WARRANT RESULTS OF USE OR THAT THE PRODUCTS ARE BUG FREE OR THAT THE PRODUCT’S USE WILL BE UNINTERRUPTED.
+    </p>
+    <button (click)="onAccept()" class="ax-btn ax-btn--base" *ngIf="!config?.eula_accepted">Accept</button>
+    <button (click)="onDeny()" class="ax-btn" *ngIf="!config?.eula_accepted">Deny</button>
+    <p  *ngIf="config?.eula_accepted">You have already accepted the terms.</p>
+    <button (click)="onAlreadyAccepted()" class="ax-btn" *ngIf="config?.eula_accepted">Ok</button>
+</main>

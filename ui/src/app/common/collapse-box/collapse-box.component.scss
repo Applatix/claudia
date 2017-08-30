@@ -1,0 +1,20 @@
+@import '../../../assets/css/config';
+
+.collapse-box {
+    overflow: hidden;
+
+    &__button {
+        position: relative;
+        top: 25px;
+        right: 20px;
+        float: right;
+        font-size: 15px;
+    }
+
+    &--collapsed {
+        height: 100px;
+    }
+    &--expanded {
+        height: auto;
+    }
+}

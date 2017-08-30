@@ -1,0 +1,13 @@
+@import './../../../assets/css/config';
+
+.ax-layout {
+    height: calc(100%);
+    padding-top: $ax-topbar-height;
+
+    &__main {
+        max-width: 500px;
+        margin: 100px auto;
+        padding: 40px;
+        background-color: $ax-color-bg-light;
+    }
+}

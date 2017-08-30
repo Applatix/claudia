@@ -1,0 +1,52 @@
+.ax-toolbar {
+    padding: 0 0 20px;
+    font-size: 16px;
+    font-weight: bold;
+
+    &::after,
+    .ax-container::after {
+        display: inline-block;
+        vertical-align: middle;
+        content: "";
+    }
+
+    &__item {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 1.5;
+        color: $ax-color-teal-6;
+
+        &:not(:last-child) {
+            margin-right: 20px;
+        }
+    }
+
+    &__button {
+        padding: 0 16px;
+        font-weight: 500;
+        font-size: .875em;
+        line-height: 40px;
+        color: $ax-color-teal-7;
+        text-transform: uppercase;
+        background-color: $ax-color-gray-2;
+        border-radius: 5px;
+        cursor: pointer;
+        outline: 0;
+
+        &:hover {
+            background-color: $ax-color-gray-1;
+        }
+
+        i {
+            font-size: 1.2em;
+
+            &:first-child {
+                margin-right: 4px;
+            }
+
+            &:last-child {
+                margin-left: 4px;
+            }
+        }
+    }
+}

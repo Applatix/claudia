@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/assets/favicon/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicon/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="/assets/favicon/manifest.json">
+    <link rel="mask-icon" href="/assets/favicon/safari-pinned-tab.svg" color="#00a2b3">
+    <meta name="theme-color" content="#363c4a">
+    <meta name="description" content="<%= htmlWebpackPlugin.options.title %>">
+
+    <% if (webpackConfig.htmlElements.headTags) { %>
+    <!-- Configured Head Tags  -->
+    <%= webpackConfig.htmlElements.headTags %>
+    <% } %>
+
+    <!-- base url -->
+    <base href="<%= htmlWebpackPlugin.options.metadata.baseUrl %>">
+    <link href="https://fonts.googleapis.com/css?family=Heebo:300,400,500,700" rel="stylesheet">
+</head>
+<body>
+    <axc-app>
+        Loading...
+    </axc-app>
+
+    <% if (htmlWebpackPlugin.options.metadata.isDevServer && htmlWebpackPlugin.options.metadata.HMR !== true) { %>
+    <!-- Webpack Dev Server reload -->
+    <script src="/webpack-dev-server.js"></script>
+    <% } %>
+</body>
+</html>

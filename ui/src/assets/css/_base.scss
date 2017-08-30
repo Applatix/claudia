@@ -1,0 +1,78 @@
+html,
+body {
+    height: 100%;
+}
+
+body {
+    font: 16px/1.23 'Heebo', sans-serif;
+    background-color: $ax-color-gray-3;
+}
+
+.ax-container {
+    max-width: $ax-width-container;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.pull-left {
+    float: left;
+}
+
+.pull-right {
+    float: right;
+}
+
+.cursor {
+    cursor: pointer;
+}
+
+.margin-left-regular {
+    margin-left: 1em;
+}
+
+.margin-top-regular {
+    margin-top: 1em;
+}
+
+.margin-bottom-regular {
+    margin-bottom: 1em;
+}
+
+.margin-bottom-large {
+    margin-bottom: 3em;
+}
+.margin-top-large {
+    margin-top: 3em;
+}
+
+.capitalize {
+    text-transform: capitalize;
+}
+
+a, a:hover {
+    color: $ax-color-teal-6;
+}
+
+.hide {
+    display: none;
+}
+
+.show {
+    display: block;
+}
+
+.dib{
+    display: inline-block;
+}

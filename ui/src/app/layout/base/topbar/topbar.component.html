@@ -1,0 +1,22 @@
+<div class="ax-topbar">
+    <div class="ax-container">
+        <div class="row">
+            <a class="ax-topbar__logo column small-3" target="_blank" href="https://applatix.com/?utm_source=claudia&utm_medium=banner">
+                <img style="height:65px;margin-top:-2px;position:relative;left:-5px;" src="/assets/icons/axlogo_teal.svg" alt="">
+                <span style="position:relative;left:-15px;color: #FF8046;">Claudia</span>
+            </a>
+            <div class="column small-9">
+                <div class="clearfix">
+                    <div class="pull-left ax-topbar__menu">
+                        <a (click)="goToReport()">Spend Analytics</a>
+                    </div>
+                    <div class="pull-right ax-topbar__menu-right">
+                        <a routerLink="/app/settings">Setup</a>
+                        <a href="http://ax-public.s3-website-us-west-1.amazonaws.com/claudia/docs/" target="_blank">Help</a>
+                        <a (click)="doLogout()">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

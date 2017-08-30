@@ -1,0 +1,8 @@
+@import '../../../assets/css/config';
+
+.white-box {
+    background-color: $ax-color-bg-light;
+    padding: 1.5em 2em;
+    border-radius: 6px;
+    border: 2px solid $ax-color-bg-strong;
+}

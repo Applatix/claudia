@@ -1,0 +1,11 @@
+<div class="white-box white-box__large collapse-box"
+     [ngClass]="{'collapse-box--collapsed': collapsed,
+                 'collapse-box--expanded': !collapsed}">
+    <div class="collapse-box__button">
+        <button class="ax-btn ax-btn--radius-2" (click)="toggle()">
+            <i class="fa" [ngClass]="{'fa-angle-down': collapsed,
+                                  'fa-angle-up': !collapsed}" aria-hidden="true"></i>
+        </button>
+    </div>
+    <ng-content></ng-content>
+</div>

@@ -1,0 +1,30 @@
+.sub-filters {
+    float:left;
+    width:33%;
+    padding:15px;
+    ul {
+        margin: 0px;
+        width: 100%;
+
+        li {
+            margin:10px 0px;
+            border-radius: 5px;
+            padding: 0px;
+            list-style-type: none;
+            border: 1px solid #C2D9F2;
+            line-height: 2em;
+            font-size: 1em;
+            padding-left: 1em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .selectedTab {
+            background: #D8E7F5;
+        }
+        .hide {
+            display: none;
+        }
+    }
+}

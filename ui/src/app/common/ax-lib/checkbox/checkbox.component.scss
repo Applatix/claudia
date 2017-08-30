@@ -1,0 +1,55 @@
+@import '../../../../assets/css/config';
+
+.ax-checkbox {
+    position: relative;
+    display: inline-block;
+    line-height: 18px;
+
+    input {
+        position: absolute;
+        z-index: 1;
+        width: 18px;
+        height: 18px;
+        opacity: 0;
+        cursor: pointer;
+
+        & + .ax-checkbox__box {
+            display: inline-block;
+            vertical-align: middle;
+            width: 18px;
+            height: 18px;
+            text-align: center;
+            border-radius: 3px;
+            border: 2px solid #999;
+            transition: background-color .2s;
+
+            .ax-checkbox__mark {
+                position: relative;
+                top: -3px;
+                transform: scaleX(-1) rotate(-35deg);
+                display: inline-block;
+                visibility: hidden;
+                font-size: 15px;
+                font-family: 'Arial', sans-serif;
+                color: $ax-color-bg-light;
+            }
+        }
+
+        &:checked + .ax-checkbox__box {
+            color: $ax-color-bg-light;
+            background-color: $ax-color-base-dlight;
+            border-color: transparent;
+
+            .ax-checkbox__mark {
+                visibility: visible;
+            }
+
+        }
+    }
+
+    &:not(:last-child) {
+        input + span {
+            margin-right: 6px;
+        }
+    }
+}

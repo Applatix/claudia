@@ -1,0 +1,28 @@
+<main class="login">
+    <div class="logo">
+        <img src="/assets/icons/AXClaudia_logo.png" alt="">
+    </div>
+    <form #loginForm="ngForm" (ngSubmit)="doLogin()" novalidate>
+        <div class="ax-form-row">
+            <label for="username">Username</label>
+            <input class="ax-field" #usernameField="ngModel" name="usernameField" id="username" type="text" [(ngModel)]="username" required>
+            <div *ngIf="usernameField.errors && usernameField.dirty" class="ax-form-row__error-msg">
+                <div [hidden]="!usernameField.errors.required">
+                    Username is required
+                </div>
+            </div>
+        </div>
+        <div class="ax-form-row">
+            <label for="password">Password</label>
+            <input class="ax-field" #passwordField="ngModel" name="passwordField" id="password" type="password" [(ngModel)]="password" required>
+            <div *ngIf="passwordField.errors && passwordField.dirty" class="ax-form-row__error-msg">
+                <div [hidden]="!passwordField.errors.required">
+                    Password is required
+                </div>
+            </div>
+        </div>
+        <div class="ax-form-row text-center">
+            <button class="ax-btn ax-btn--base ax-btn--wide" type="submit">Sign in</button>
+        </div>
+    </form>
+</main>

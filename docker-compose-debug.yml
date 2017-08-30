@@ -1,0 +1,63 @@
+# "Debug" version of app which exposes database ports and also maps source directory to container and leaves container running
+version: '2'
+services:
+  costdb:
+    image: influxdb:1.2.0
+    expose:
+    - "8086"
+    - "8083"
+    ports:
+    - "8086:8086"
+    - "8083:8083"
+    environment:
+    - INFLUXDB_HTTP_MAX_ROW_LIMIT=40000
+    - INFLUXDB_ADMIN_ENABLED=true
+    volumes:
+    - costdb_vol:/var/lib/influxdb
+  userdb:
+    image: postgres:9.6.1
+    expose:
+    - "5432"
+    ports:
+    - "5432:5432"
+    volumes:
+    - userdb_vol:/var/lib/postgresql/data
+    env_file: 
+    - ./config.env
+  ingestd:
+    image: "claudia"
+    entrypoint:
+    - "sh"
+    - "-c"
+    - "/usr/bin/ingestd run & sleep 365d"
+    depends_on:
+    - costdb
+    - userdb
+    expose:
+    - "8081"
+    ports:
+     - "8081:8081"
+    env_file: 
+     - ./config.env
+  server:
+    image: claudia
+    depends_on:
+    - costdb
+    - userdb
+    expose:
+    - "80"
+    - "443"
+    ports:
+    - "80:80"
+    - "443:443"
+    entrypoint:
+    - "sh"
+    - "-c"
+    - "/usr/bin/claudiad & sleep 365d"
+    env_file: 
+    - ./config.env
+    volumes:
+    - .:/src
+volumes:
+  costdb_vol:
+  userdb_vol:

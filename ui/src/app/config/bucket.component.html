@@ -1,0 +1,49 @@
+<main class="bucket-config white-box">
+
+    <form #loginForm="ngForm" class="row" novalidate>
+        <div class="ax-form-row columns small-6">
+            <label for="bucketname">Bucket Name</label>
+            <input  [attr.disabled]="bucketId ? true : null" class="ax-field" #bucketnameField="ngModel" name="bucketnameField" id="bucketname" type="text" [(ngModel)]="bucketname" required>
+            <div *ngIf="bucketnameField.errors && bucketnameField.dirty" class="ax-form-row__error-msg">
+                <div [hidden]="!bucketnameField.errors.required">
+                    Bucket name is required.
+                </div>
+            </div>
+        </div>
+        <div class="ax-form-row columns small-6">
+            <label for="report_prefix">Report Prefix</label>
+            <input [attr.disabled]="bucketId ? true : null" class="ax-field" #reportPrefixField="ngModel" name="reportPrefixField" id="report_prefix" type="text" [(ngModel)]="report_prefix" required>
+            <div *ngIf="reportPrefixField.errors && reportPrefixField.dirty" class="ax-form-row__error-msg">
+                <div [hidden]="!reportPrefixField.errors.required">
+                    Report prefix is required.
+                </div>
+            </div>
+        </div>
+
+        <div class="ax-form-row columns small-6">
+            <label for="aws_access_key_id">AWS Access Key ID</label>
+            <input class="ax-field" #awsKeyField="ngModel" name="awsKeyField" id="aws_access_key_id" type="text" [(ngModel)]="aws_access_key_id" required>
+            <div *ngIf="awsKeyField.errors && awsKeyField.dirty" class="ax-form-row__error-msg">
+                <div [hidden]="!awsKeyField.errors.required">
+                    AWS Key ID is required.
+                </div>
+            </div>
+        </div>
+
+        <div class="ax-form-row columns small-6">
+            <label for="aws_secret_access_key">AWS Secret Access Key</label>
+            <input class="ax-field" #awsSecretField="ngModel" name="awsSecretField" id="aws_secret_access_key" type="password" [(ngModel)]="aws_secret_access_key" required>
+            <div *ngIf="awsSecretField.errors && awsSecretField.dirty" class="ax-form-row__error-msg">
+                <div [hidden]="!reportPrefixField.errors.required">
+                    AWS Secret Access Key is required.
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center columns small-12 action-item">
+            <button *ngIf="!bucketId" class="ax-btn ax-btn--base ax-btn--wide" (click)="updateConfig()">Create</button>
+            <button *ngIf="bucketId" class="ax-btn ax-btn--base ax-btn--wide" (click)="updateConfig()">Update</button>
+            <button *ngIf="bucketId" class="ax-btn ax-btn--wide" (click)="deleteBucket()">Delete</button>
+        </div>
+    </form>
+</main>

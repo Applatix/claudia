@@ -1,0 +1,13 @@
+site_name: Claudia Docs
+theme: yeti
+copyright: Copyright &copy; 2017 <a href="https://www.applatix.com">Applatix</a>
+strict: true
+pages:
+- Home: 'index.md'
+- Setup:
+    - AWS: 'setup/aws.md'
+    - Claudia: 'setup/claudia.md'
+- FAQ: 'faq.md'
+- About:
+    - 'Release Notes': 'about/release-notes.md'
+    - 'Contact': 'about/contact.md'

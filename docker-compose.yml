@@ -1,0 +1,49 @@
+# "Production" version of app which exposes only the http port
+version: '2'
+services:
+  costdb:
+    image: influxdb:1.2.0
+    expose:
+    - "8086"
+    environment:
+    - INFLUXDB_HTTP_MAX_ROW_LIMIT=40000
+    - INFLUXDB_REPORTING_DISABLED=true
+    volumes:
+    - costdb_vol:/var/lib/influxdb
+    restart: always
+  userdb:
+    image: "postgres:9.6.1"
+    expose:
+    - "5432"
+    volumes:
+    - userdb_vol:/var/lib/postgresql/data
+    env_file: 
+    - ./config.env
+    restart: always
+  ingestd:
+    image: claudia
+    entrypoint:
+    - /usr/bin/ingestd
+    - run
+    depends_on:
+    - costdb
+    - userdb
+    expose:
+    - "8081"
+    env_file: 
+    - ./config.env
+    restart: always
+  server:
+    image: claudia
+    depends_on:
+    - costdb
+    - userdb
+    ports:
+    - "80:80"
+    - "443:443"
+    env_file: 
+    - ./config.env
+    restart: always
+volumes:
+  costdb_vol:
+  userdb_vol:

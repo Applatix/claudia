@@ -1,0 +1,6 @@
+<div class="ax-switch">
+    <button *ngFor="let option of options" class="ax-switch__button" [class.active]="option.value === selectedValue"
+            (click)="selectOption(option.value)">
+        {{option.title}}
+    </button>
+</div>

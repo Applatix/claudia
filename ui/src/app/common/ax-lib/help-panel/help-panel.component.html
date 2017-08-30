@@ -1,0 +1,13 @@
+<ax-sliding-panel [show]="show" [position]="position">
+    <div class="help-panel">
+        <div class="help-panel__header">
+            <div class="help-panel__close" *ngIf="hasCloseButton">
+                <button class="ax-btn-radius-o ax-btn-radius-o--close" (click)="onCloseButtonClick()"></button>
+            </div>
+            <h3>Applatix help</h3>
+        </div>
+        <div class="help-panel__body">
+            <ng-content></ng-content>
+        </div>
+    </div>
+</ax-sliding-panel>

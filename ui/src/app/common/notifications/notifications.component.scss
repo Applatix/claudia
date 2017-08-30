@@ -1,0 +1,49 @@
+@import '../../../assets/css/config';
+
+.ax-notifications-list {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: $ax-zIndex-notification;
+    box-shadow: 2px 0 6px rgba(#000, .3);
+}
+
+.ax-notification {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: $ax-topbar-height;
+    padding: 0 60px 0 30px;
+    line-height: $ax-topbar-height;
+    font-size: 20px;
+    color: #fff;
+
+    &.success {
+        background-color: $ax-color-success;
+    }
+
+    &.warning {
+        background-color: $ax-color-warning;
+    }
+
+    &.error {
+        background-color: $ax-color-failed;
+    }
+
+    &__ico {
+        vertical-align: middle;
+        margin-right: 10px;
+        border-radius: 50%;
+        border: 1px solid rgba(#fff, .4);
+    }
+
+    &__close {
+        position: absolute;
+        top: 50%;
+        right: 30px;
+        transform: translateY(-50%);
+        cursor: pointer;
+    }
+}

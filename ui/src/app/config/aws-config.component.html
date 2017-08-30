@@ -1,0 +1,49 @@
+<main class="aws-config">
+    <div class="row">
+        <div class="ax-form-row columns small-12" *ngIf="!config">
+            <h4>Create a report to get started</h4>
+        </div>
+        <div class="ax-form-row columns small-12" *ngIf="config">
+            <h3>Report Settings</h3>
+            <h4>You should have at least one bucket configured to see data</h4>
+        </div>
+
+        <div class="ax-form-row columns small-6">
+            <label for="report_name">Report Name</label>
+            <input class="ax-field" #reportNameField="ngModel" name="reportNameField" id="report_name" type="text" [(ngModel)]="report_name">
+        </div>
+        <div class="ax-form-row columns small-6">
+            <label for="retention_days">Retention Days</label>
+            <input class="ax-field" #retentionDaysField="ngModel" name="retentionDaysField" id="retention_days" type="number" [(ngModel)]="retention_days"
+                required>
+                <div *ngIf="retentionDaysField.errors && retentionDaysField.dirty" class="ax-form-row__error-msg">
+                    <div [hidden]="!retentionDaysField.errors.required">
+                        Retention Days is required.
+                    </div>
+                </div>
+        </div>
+        <div class="text-center columns small-12 action-item">
+            <button *ngIf="!config" class="ax-btn ax-btn--base ax-btn--wide" (click)="saveReportObj()">Create</button>
+            <button *ngIf="config" class="ax-btn ax-btn--base ax-btn--wide" (click)="saveReportObj()">Update</button>
+            <button *ngIf="config" class="ax-btn ax-btn--base ax-btn--wide" (click)="addBucket()">+Add Bucket</button>
+        </div>
+    </div>
+
+    <div class="row margin-top-large" *ngIf="config">
+        <div class="columns large-12">
+            <h3>Manage Buckets</h3>
+            <h4>Enter one or more S3 buckets containing your
+                <a href="https://console.aws.amazon.com/billing/home#/reports" style="text-decoration: underline;"
+                    target="_blank">AWS Cost & Usage Reports</a>, along with access credentials to the bucket.
+                    <a href="http://ax-public.s3-website-us-west-1.amazonaws.com/claudia/docs/"
+                        target="_blank">
+                        <i class="fa fa-question-circle-o" aria-hidden="true"></i></a>
+            </h4>
+        </div>
+        <div class="columns large-12">
+            <axc-bucket *ngFor="let item of buckets; let idx = index;" [bucket]="item" [identifier]="idx" [reportId]="config.id" (onDelete)="onBucketDelete($event)"
+                (onSave)="onBucketSave($event)"></axc-bucket>
+        </div>
+    </div>
+
+</main>

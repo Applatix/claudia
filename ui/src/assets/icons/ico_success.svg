@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 40.3 (33839) - http://www.bohemiancoding.com/sketch -->
+    <title>i_complete</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icons_DarkTeal_07656E" transform="translate(-1280.000000, -940.000000)">
+            <g id="i_complete" transform="translate(1280.000000, 940.000000)">
+                <circle id="Oval-2" fill="#4CAF50" cx="20" cy="20" r="20"></circle>
+                <polygon id="Shape" fill="#FFFFFF" points="28.766129 14.25 18.1532258 24.53125 13.733871 20.25 12.25 21.6875 17.4112903 26.6875 18.1532258 27.375 18.8951613 26.6875 30.25 15.6875"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

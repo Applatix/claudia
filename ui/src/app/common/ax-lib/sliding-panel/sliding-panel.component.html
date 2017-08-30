@@ -1,0 +1,7 @@
+<div class="popup-overlay" [ngClass]="{'opened': show}"></div>
+<div class="sliding-panel sliding-panel--{{position}}" [ngClass]="{'sliding-panel--opened': show}">
+    <i *ngIf="hasCloseButton" class="fa fa-times sliding-panel__close-button" aria-hidden="true" (click)="onCloseButtonClick()"></i>
+    <div>
+        <ng-content></ng-content>
+    </div>
+</div>

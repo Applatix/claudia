@@ -1,0 +1,30 @@
+# Development version of compose file which starts only the database services and exposes their ports
+# to the host. This way api servers can be developed against them outside the context of linked containers.
+version: '2'
+services:
+  costdb:
+    image: influxdb:1.2.0
+    expose:
+    - "8086"
+    - "8083"
+    ports:
+    - "8086:8086"
+    - "8083:8083"
+    environment:
+    - INFLUXDB_HTTP_MAX_ROW_LIMIT=40000
+    - INFLUXDB_ADMIN_ENABLED=true
+    volumes:
+    - costdb_vol:/var/lib/influxdb
+  userdb:
+    image: postgres:9.6.1
+    expose:
+    - "5432"
+    ports:
+    - "5432:5432"
+    volumes:
+    - userdb_vol:/var/lib/postgresql/data
+    env_file: 
+    - ./config.env
+volumes:
+  costdb_vol:
+  userdb_vol:

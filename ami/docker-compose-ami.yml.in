@@ -1,0 +1,46 @@
+# AMI version of app which exposes only the http port and expects EBS volume mounted under /mnt/claudia
+version: '2'
+services:
+  costdb:
+    image: influxdb:1.2.0
+    expose:
+    - "8086"
+    environment:
+    - INFLUXDB_HTTP_MAX_ROW_LIMIT=40000
+    - INFLUXDB_REPORTING_DISABLED=true
+    volumes:
+    - /mnt/claudia/influxdb:/var/lib/influxdb
+    restart: always
+  userdb:
+    image: postgres:9.6.1
+    expose:
+    - "5432"
+    volumes:
+    - /mnt/claudia/postgres:/var/lib/postgresql/data
+    env_file: 
+    - ./config.env
+    restart: always
+  ingestd:
+    image: "${IMAGE_TAG}"
+    entrypoint:
+    - /usr/bin/ingestd
+    - run
+    depends_on:
+    - costdb
+    - userdb
+    expose:
+    - "8081"
+    env_file: 
+     - ./config.env
+    restart: always
+  server:
+    image: "${IMAGE_TAG}"
+    depends_on:
+    - costdb
+    - userdb
+    ports:
+    - "80:80"
+    - "443:443"
+    env_file: 
+    - ./config.env
+    restart: always

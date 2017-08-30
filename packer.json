@@ -1,0 +1,85 @@
+{
+  "variables": {
+    "aws_access_key": "",
+    "aws_secret_key": "",
+    "build_timestamp": "",
+    "full_version": "",
+    "version": ""
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "region": "us-east-1",
+    "source_ami": "ami-0b33d91d",
+    "instance_type": "m3.medium",
+    "ssh_username": "ec2-user",
+    "ami_name": "claudia-v{{user `full_version`}}-{{user `build_timestamp`}}",
+    "ami_description": "Claudia v{{user `version`}}",
+
+    "ami_block_device_mappings": [
+    {
+      "device_name": "/dev/xvdl",
+      "volume_size": 40,
+      "volume_type": "gp2",
+      "delete_on_termination": true
+    }],
+    "launch_block_device_mappings": [
+    {
+      "device_name": "/dev/xvdl",
+      "volume_size": 40,
+      "volume_type": "gp2",
+      "delete_on_termination": true
+    }]
+  }],
+  "provisioners": [
+  {
+    "type": "file",
+    "source": "ami/docker-storage",
+    "destination": "/tmp/docker-storage"
+  },
+  {
+    "type": "file",
+    "source": "ami/claudia.tar.gz",
+    "destination": "/tmp/claudia.tar.gz"
+  },
+  {
+    "type": "file",
+    "source": "ami/docker-compose.yml",
+    "destination": "/home/ec2-user/docker-compose.yml"
+  },
+  {
+    "type": "file",
+    "source": "config.env",
+    "destination": "/home/ec2-user/config.env"
+  },
+  {
+    "type": "shell",
+    "inline": [
+      "sudo yum update -y",
+      "sudo pvcreate /dev/xvdl",
+      "sudo vgcreate vgclaudia /dev/xvdl",
+      "sudo lvcreate --wipesignatures y -l 100%VG -n lvclaudia vgclaudia",
+      "sudo mkfs -t ext4 /dev/vgclaudia/lvclaudia",
+      "sudo sh -c \"echo '/dev/vgclaudia/lvclaudia /mnt/claudia ext4 defaults,noatime 0 0' >> /etc/fstab\"",
+      "sudo mkdir /mnt/claudia",
+      "sudo mount /mnt/claudia",
+      "sudo yum install -y docker",
+      "sudo cp /tmp/docker-storage /etc/sysconfig/docker-storage",
+      "sudo rm -f /tmp/docker-storage",
+      "sudo usermod -a -G docker ec2-user",
+      "sudo rm -rf /var/lib/docker/*",
+      "sudo service docker start",
+      "until sudo docker info; do sleep 3; done",
+      "sudo docker load -i /tmp/claudia.tar.gz",
+      "sudo rm -f /tmp/claudia.tar.gz",
+      "sudo curl -L \"https://github.com/docker/compose/releases/download/1.11.1/docker-compose-$(uname -s)-$(uname -m)\" -o /usr/bin/docker-compose",
+      "sudo chmod ugo+x /usr/bin/docker-compose",
+      "sudo docker network create ec2user_default",
+      "sudo docker-compose -f /home/ec2-user/docker-compose.yml create",
+      "sudo rm -f /root/.ssh/authorized_keys /home/*/.ssh/authorized_keys",
+      "sudo rm -f /root/docker/config.json /home/*/docker/config.json",
+      "sudo rm -f /root/.*history /home/*/.*history"
+    ]
+  }]
+}

@@ -1,0 +1,31 @@
+.axc-list-group {
+    margin: 0;
+    padding: 2px;
+    background-color: #fff;
+    border-radius: 6px;
+    list-style: none;
+
+    &__item {
+        padding: 8px 15px;
+        font-weight: 400;
+        font-size: 13px;
+        color: $ax-color-gray-7;
+        text-transform: uppercase;
+        border-radius: 5px;
+        cursor: pointer;
+
+        &.active {
+            color: #fff;
+            background-color: $ax-color-teal-6;
+            cursor: default;
+        }
+
+        &:not(.active):hover {
+            background-color: $ax-color-gray-2;
+        }
+
+        &:not(:last-child) {
+            margin-bottom: 2px;
+        }
+    }
+}
