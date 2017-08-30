@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+
+	<title>AWS - Claudia Docs</title>
+
+        <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../css/highlight.css">
+        <link href="../../css/base.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../..">Claudia Docs</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="../..">Home</a>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Setup <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li class="active">
+    <a href="./">AWS</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../claudia/">Claudia</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../faq/">FAQ</a>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../about/release-notes/">Release Notes</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../about/contact/">Contact</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                <li >
+                    <a rel="next" href="../..">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../claudia/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#setting-up-aws-for-claudia">Setting Up AWS for Claudia</a></li>
+        
+            <li><a href="#step-1-configure-destination-s3-bucket">Step 1 Configure Destination S3 Bucket</a></li>
+        
+            <li><a href="#step-2-enable-cost-and-usage-reports">Step 2 Enable Cost and Usage Reports</a></li>
+        
+            <li><a href="#step-3-create-policy-for-claudia">Step 3 Create Policy for Claudia</a></li>
+        
+            <li><a href="#step-4-create-claudia-user-access-credentials">Step 4 Create Claudia User &amp; Access Credentials</a></li>
+        
+            <li><a href="#step-5-enable-cost-allocation-tags-optional">Step 5 Enable Cost Allocation Tags (Optional)</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="setting-up-aws-for-claudia">Setting Up AWS for Claudia</h1>
+<p>This document guides you through the process of enabling AWS Cost &amp; Usage reports
+for delivery to your S3 bucket, and creating the access credentials and policy
+so Claudia can access the report data.</p>
+<p>When you complete these steps, go to
+<a href="../claudia">Claudia setup</a> to configure your application.</p>
+<h3 id="step-1-configure-destination-s3-bucket">Step 1 Configure Destination S3 Bucket</h3>
+<ul>
+<li>
+<p>Create a new bucket (or select an existing one). AWS lets you upload Cost &amp; Usage reports to an S3 bucket of your choice.</p>
+</li>
+<li>
+<p>Attach the following policy, which gives Amazon permissions to write to the bucket (NOTE: Replace <code>example-billing-bucket</code> with the actual name of your bucket).</p>
+</li>
+</ul>
+<pre><code>    {
+      &quot;Version&quot;: &quot;2008-10-17&quot;,
+      &quot;Id&quot;: &quot;Policy1335892530063&quot;,
+      &quot;Statement&quot;: [
+        {
+          &quot;Sid&quot;: &quot;Stmt1335892150622&quot;,
+          &quot;Effect&quot;: &quot;Allow&quot;,
+          &quot;Principal&quot;: {
+            &quot;AWS&quot;: &quot;arn:aws:iam::386209384616:root&quot;
+          },
+          &quot;Action&quot;: [
+            &quot;s3:GetBucketAcl&quot;,
+            &quot;s3:GetBucketPolicy&quot;
+          ],
+          &quot;Resource&quot;: &quot;arn:aws:s3:::example-billing-bucket&quot;
+        },
+        {
+          &quot;Sid&quot;: &quot;Stmt1335892526596&quot;,
+          &quot;Effect&quot;: &quot;Allow&quot;,
+          &quot;Principal&quot;: {
+            &quot;AWS&quot;: &quot;arn:aws:iam::386209384616:root&quot;
+          },
+          &quot;Action&quot;: [
+            &quot;s3:PutObject&quot;
+          ],
+          &quot;Resource&quot;: &quot;arn:aws:s3:::example-billing-bucket/*&quot;
+        }
+      ]
+    }
+
+</code></pre>
+
+<h3 id="step-2-enable-cost-and-usage-reports">Step 2 Enable Cost and Usage Reports</h3>
+<ul>
+<li>
+<p>Log in with your AWS payer account and visit the <a href="https://console.aws.amazon.com/billing/home#/reports">Reports</a> section from billing management. </p>
+</li>
+<li>
+<p>Click "Create Report".</p>
+</li>
+</ul>
+<blockquote>
+<p><img alt="Create Report 1" src="../aws/create-report-1.png" /></p>
+</blockquote>
+<ul>
+<li>On the next screen choose a report name, select the "hourly" time unit, and check the box to include resource IDs.</li>
+</ul>
+<blockquote>
+<p><img alt="Create Report 2" src="../aws/create-report-2.png" /></p>
+</blockquote>
+<ul>
+<li>On the last screen, configure this information: 1) Enter the S3 bucket name you configured in <a href="#1-configure-destination-bucket">Step 1</a>, 2) Enter a non-empty value for the report path prefix, and 3) Enable the GZIP compression option.</li>
+</ul>
+<blockquote>
+<p><img alt="Create Report 3" src="../aws/create-report-3.png" /></p>
+</blockquote>
+<ul>
+<li>Click Next. </li>
+</ul>
+<p>After enabling the report for the first time, it will take up to 24 hours before the first report is delivered. AWS delivers new reports at least once a day.</p>
+<h3 id="step-3-create-policy-for-claudia">Step 3 Create Policy for Claudia</h3>
+<ul>
+<li>
+<p>Navigate to the <a href="https://console.aws.amazon.com/iam/home#/policies">Policies</a> page under Identity and Access Management (IAM).</p>
+</li>
+<li>
+<p>Create the following policy that grants read-only access to the billing bucket configured in <a href="#1-configure-destination-bucket">Step 1</a>,
+as well other permissions needed by the application (NOTE: Replace <code>example-billing-bucket</code> with the actual bucket name).</p>
+</li>
+</ul>
+<pre><code>{
+    &quot;Version&quot;: &quot;2012-10-17&quot;,
+    &quot;Statement&quot;: [
+        {
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Action&quot;: [
+                &quot;s3:ListBucket&quot;,
+                &quot;s3:GetObject&quot;
+            ],
+            &quot;Resource&quot;: [
+                &quot;arn:aws:s3:::example-billing-bucket&quot;,
+                &quot;arn:aws:s3:::example-billing-bucket/*&quot;
+            ]
+        },
+        {
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Action&quot;: [
+                &quot;ec2:DescribeImages&quot;
+            ],
+            &quot;Resource&quot;: [
+                &quot;*&quot;
+            ]
+        }
+    ]
+}
+</code></pre>
+
+<h3 id="step-4-create-claudia-user-access-credentials">Step 4 Create Claudia User &amp; Access Credentials</h3>
+<ul>
+<li>Navigate to the IAM <a href="https://console.aws.amazon.com/iam/home#/users">Users</a> section.</li>
+<li>Create a new user by entering a User name and check the box to enable "Programmatic access."</li>
+</ul>
+<blockquote>
+<p><img alt="Create Users" src="../aws/create-user.png" /></p>
+</blockquote>
+<ul>
+<li>On the next screen, attach the policy that was created in <a href="#3-create-policy-for-claudia">Step 3</a>.</li>
+</ul>
+<blockquote>
+<p><img alt="Attach Policy" src="../aws/attach-policy.png" /></p>
+</blockquote>
+<ul>
+<li>After creating the user, you must download the AWS Access Key ID and Secret Access Key for programmatic access. NOTE: Please copy this information as AWS only displays it once. You need to input these credentials to access your application. </li>
+</ul>
+<blockquote>
+<p><img alt="Copy Credentials" src="../aws/copy-credentials.png" /></p>
+</blockquote>
+<h3 id="step-5-enable-cost-allocation-tags-optional">Step 5 Enable Cost Allocation Tags (Optional)</h3>
+<p>AWS allows you to enable resource tags to appear in your Cost &amp; Usage reports as additional columns in the report. Claudia automatically detects these tags and enables additional dimensions in the UI to group or filter by. </p>
+<p>To enable resource tags in your billing report, go to the "Cost Allocation Tags" section in billing managment. Under this section, AWS provides an useful <code>createdBy</code> tag to track the creator of various resources. You can activate this tag with one click:</p>
+<blockquote>
+<p><img alt="Enable createdBy Tag" src="../aws/enable-createdby-tag.png" /></p>
+</blockquote>
+<p>You can also enable your own, user-defined cost allocation tags as shown below:</p>
+<blockquote>
+<p><img alt="Enable User Tags" src="../aws/enable-user-tags.png" /></p>
+</blockquote></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+                <center>Copyright &copy; 2017 <a href="https://www.applatix.com">Applatix</a></center>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
+        <script src="../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../js/highlight.pack.js"></script>
+        <script>var base_url = '../..';</script>
+        <script data-main="../../mkdocs/js/search.js" src="../../mkdocs/js/require.js"></script>
+        <script src="../../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

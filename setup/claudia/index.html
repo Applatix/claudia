@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+
+	<title>Claudia - Claudia Docs</title>
+
+        <link href="../../css/bootstrap-custom.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome-4.0.3.css" rel="stylesheet">
+        <link rel="stylesheet" href="../../css/highlight.css">
+        <link href="../../css/base.css" rel="stylesheet">
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+
+        
+    </head>
+
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Main title -->
+            <a class="navbar-brand" href="../..">Claudia Docs</a>
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+            <!-- Main navigation -->
+            <ul class="nav navbar-nav">
+            
+            
+                <li >
+                    <a href="../..">Home</a>
+                </li>
+            
+            
+            
+                <li class="dropdown active">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Setup <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../aws/">AWS</a>
+</li>
+
+                    
+                        
+<li class="active">
+    <a href="./">Claudia</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            
+                <li >
+                    <a href="../../faq/">FAQ</a>
+                </li>
+            
+            
+            
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                    
+                        
+<li >
+    <a href="../../about/release-notes/">Release Notes</a>
+</li>
+
+                    
+                        
+<li >
+    <a href="../../about/contact/">Contact</a>
+</li>
+
+                    
+                    </ul>
+                </li>
+            
+            
+            </ul>
+
+            <!-- Search, Navigation and Repo links -->
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                        <i class="fa fa-search"></i> Search
+                    </a>
+                </li>
+                <li >
+                    <a rel="next" href="../aws/">
+                        <i class="fa fa-arrow-left"></i> Previous
+                    </a>
+                </li>
+                <li >
+                    <a rel="prev" href="../../faq/">
+                        Next <i class="fa fa-arrow-right"></i>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+        <div class="container">
+            <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+    
+        <li class="main active"><a href="#setting-up-claudia">Setting Up Claudia</a></li>
+        
+            <li><a href="#step-1-launch-the-ami-from-aws">Step 1: Launch the AMI from AWS</a></li>
+        
+            <li><a href="#step-2-configure-report-buckets">Step 2: Configure Report Buckets</a></li>
+        
+            <li><a href="#step-3-configuring-dns-and-ssl-certificate-recommended">Step 3: Configuring DNS and SSL Certificate (recommended)</a></li>
+        
+            <li><a href="#step-4-creating-account-aliases">Step 4: Creating Account Aliases</a></li>
+        
+    
+    </ul>
+</div></div>
+            <div class="col-md-9" role="main">
+
+<h1 id="setting-up-claudia">Setting Up Claudia</h1>
+<p>Before you set up Claudia, make sure you have completed the <a href="../aws/">AWS Setup</a> steps for enabling AWS Cost &amp; Usage Reports, and creating the required AWS credentials to access the S3 bucket.</p>
+<h3 id="step-1-launch-the-ami-from-aws">Step 1: Launch the AMI from AWS</h3>
+<ul>
+<li>
+<p>Visit the Claudia AWS marketplace page at <a href="https://aws.amazon.com/marketplace/pp/B06XVZ9VS9">https://aws.amazon.com/marketplace/pp/B06XVZ9VS9</a>. From there, follow instructions to launch the instance into your account.</p>
+</li>
+<li>
+<p>Choose an instance type with at least 8 GB of memory (such as t2.large, m4.large, or m3.large).</p>
+</li>
+<li>
+<p>Attach a security group for enabling HTTP access (ports 80 &amp; 443) to the instance.  The screenshot below shows a sample security group configuration.</p>
+</li>
+</ul>
+<blockquote>
+<p><img alt="Configure Security Group" src="../claudia/http-sg.png" /></p>
+</blockquote>
+<ul>
+<li>
+<p>Launch the AMI.</p>
+</li>
+<li>
+<p>Browse to the public IP address of the instance.</p>
+</li>
+<li>
+<p><strong>Login with the username <code>admin</code> and the EC2 instance ID as the password.</strong> Applatix recommends changing the password from its default value after the initial login.</p>
+</li>
+</ul>
+<h3 id="step-2-configure-report-buckets">Step 2: Configure Report Buckets</h3>
+<ul>
+<li>From the AWS billing dashboard, go to the <a href="https://console.aws.amazon.com/billing/home#/reports">Reports</a> section, and expand the cost and usage report you created in <a href="../aws/#2-enable-cost-and-usage-reports">AWS Setup Step 2</a>.</li>
+<li>Make a note of the S3 bucket name and the "Report path." You will use this information when setting up Claudia. In the sample screenshot below, the S3 bucket name is <code>example-billing-bucket</code> and the Report path is <code>costusage/example-report</code>.</li>
+</ul>
+<blockquote>
+<p><img alt="Copy Bucket Information" src="../claudia/bucket-information.png" /></p>
+</blockquote>
+<ul>
+<li>
+<p>From Claudia, navigate to the "Report Setup" page and create a report.</p>
+</li>
+<li>
+<p>After the report displays, click "Add Bucket."</p>
+</li>
+<li>
+<p>Enter the following information that you just accessed from AWS Step 2:</p>
+</li>
+<li>S3 bucket name and the Report path </li>
+<li>Access credentials that you created in <a href="../aws/#4-create-claudia-user-access-credentials">AWS Setup Step 4</a>.</li>
+</ul>
+<blockquote>
+<p><img alt="Add Bucket Information" src="../claudia/add-bucket.png" /></p>
+</blockquote>
+<ul>
+<li>Click Create.</li>
+</ul>
+<p>Once the bucket has been added, Claudia will immediately begin processing the report data in the bucket.</p>
+<p>You should start seeing data arriving in the Claudia report within a minute. The processing step takes about 5 minutes for each month's worth of data.</p>
+<h3 id="step-3-configuring-dns-and-ssl-certificate-recommended">Step 3: Configuring DNS and SSL Certificate (recommended)</h3>
+<p>Using AWS Route 53 or another DNS service, add a DNS record that points to the public IP address of the instance.</p>
+<p>Out-of-the box, Claudia uses a self-signed certificate that was generated on the initial launch of the instance. However, after you configure the instance with a DNS name, Applatix recommends obtaining a valid SSL certificate. This results in stronger security and better browser performance through browser caching.</p>
+<p>In Claudia, you can enter the private key and public certificate information in the "SSL Keys" section from the setup screens:</p>
+<blockquote>
+<p><img alt="Manage Certificates" src="../claudia/manage-certificates.png" /></p>
+</blockquote>
+<h3 id="step-4-creating-account-aliases">Step 4: Creating Account Aliases</h3>
+<p>As the AWS Cost &amp; Usage reports are processed, Claudia automatically detects the AWS Account IDs that the reports contain. The Account Alias Names screen allows you to create alias names for these account IDs with friendlier human-readable names.</p>
+<blockquote>
+<p><img alt="Account Aliases" src="../claudia/account-aliases.png" /></p>
+</blockquote></div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            
+                <center>Copyright &copy; 2017 <a href="https://www.applatix.com">Applatix</a></center>
+            
+            <center>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</center>
+        </footer>
+
+        <script src="../../js/jquery-1.10.2.min.js"></script>
+        <script src="../../js/bootstrap-3.0.3.min.js"></script>
+        <script src="../../js/highlight.pack.js"></script>
+        <script>var base_url = '../..';</script>
+        <script data-main="../../mkdocs/js/search.js" src="../../mkdocs/js/require.js"></script>
+        <script src="../../js/base.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="Search Modal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="exampleModalLabel">Search</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            From here you can search these documents. Enter
+                            your search terms below.
+                        </p>
+                        <form role="form">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query">
+                            </div>
+                        </form>
+                        <div id="mkdocs-search-results"></div>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
