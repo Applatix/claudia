@@ -1,10 +1,8 @@
 # Changelog
 
-<!--
-### Version 1.1.0 (2017-08-29)
+### Version 1.1.0 (2017-08-30)
  * Open source release
  * Cache bucket region during configuration
--->
 
 ### Version 1.0.9 (2017-04-27)
  * Fix issue preventing the ingestion of reports with Redshift/QuickSight option enabled
@@ -32,7 +30,7 @@
 ### Version 1.0.2 (2017-03-17)
  * Add indicator when billing reports are currently being processed
  * When selecting hourly interval, the hour of the datapoint is properly displayed in the tooltip
- * Support report names and paths with special characters, and reports without a path prefix
+ * Support report names and paths with special characters, and reports which did not configure a "report path prefix"
  * Eliminate some resource leaks
 
 ### Version 1.0.1 (2017-02-23)

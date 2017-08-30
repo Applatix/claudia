@@ -1,4 +1,4 @@
-# Claudia v1.0
+# Claudia
 
 ## Introduction
 

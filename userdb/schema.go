@@ -47,10 +47,10 @@ CREATE TABLE bucket (
 	report_id              UUID NOT NULL REFERENCES report(id) ON DELETE CASCADE,
 	bucketname             TEXT NOT NULL,
 	region                 TEXT NOT NULL,
-	report_prefix          TEXT NOT NULL,
+	report_path            TEXT NOT NULL,
 	aws_access_key_id      TEXT NOT NULL,
 	aws_secret_access_key  TEXT NOT NULL,
-	CONSTRAINT unique_s3path UNIQUE (bucketname, report_prefix)
+	CONSTRAINT unique_s3path UNIQUE (bucketname, report_path)
 );
 `, `
 -- Table of aws account ids associated with a report. Used primarily translating aws account ids to user defined display names

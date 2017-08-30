@@ -254,7 +254,7 @@ func (isc *IngestSvcContext) updateReportStatuses(reports []*userdb.Report, repo
 				statusDetail = sd
 				break
 			} else if rs == claudia.ReportStatusProcessing {
-				processing = append(processing, fmt.Sprintf("%s/%s/%s", is.Bucket, is.ReportPathPrefix, is.BillingPeriod))
+				processing = append(processing, fmt.Sprintf("%s/%s/%s", is.Bucket, is.ReportPath, is.BillingPeriod))
 				reportStatus = rs
 			}
 		}
@@ -309,10 +309,10 @@ func (isc *IngestSvcContext) purgeDeleted() error {
 			return err
 		}
 		for _, b := range buckets {
-			activeBucket := report.GetBucket(b.Bucket, b.ReportPathPrefix)
+			activeBucket := report.GetBucket(b.Bucket, b.ReportPath)
 			if activeBucket == nil {
-				log.Printf("Report %s bucket %s/%s no longer active. Deleting report data", report.ID, b.Bucket, b.ReportPathPrefix)
-				err = repCtx.DeleteReportBillingBucketData(b.Bucket, b.ReportPathPrefix)
+				log.Printf("Report %s bucket %s/%s no longer active. Deleting report data", report.ID, b.Bucket, b.ReportPath)
+				err = repCtx.DeleteReportBillingBucketData(b.Bucket, b.ReportPath)
 				if err != nil {
 					return err
 				}
@@ -324,10 +324,10 @@ func (isc *IngestSvcContext) purgeDeleted() error {
 			return err
 		}
 		for _, is := range statuses {
-			activeBucket := report.GetBucket(is.Bucket, is.ReportPathPrefix)
+			activeBucket := report.GetBucket(is.Bucket, is.ReportPath)
 			if activeBucket == nil {
-				log.Printf("Deleting ingest status report %s bucket %s/%s no longer active. Deleting status data", is.ReportID, is.Bucket, is.ReportPathPrefix)
-				err = repCtx.DeleteBillingBucketHistory(is.Bucket, is.ReportPathPrefix)
+				log.Printf("Deleting ingest status report %s bucket %s/%s no longer active. Deleting status data", is.ReportID, is.Bucket, is.ReportPath)
+				err = repCtx.DeleteBillingBucketHistory(is.Bucket, is.ReportPath)
 				if err != nil {
 					return err
 				}
@@ -348,11 +348,11 @@ func (isc *IngestSvcContext) generateJobs(reports []*userdb.Report) ([]*manifest
 		for _, bucket := range report.Buckets {
 			bucketJobs, err := isc.generateJobsFomBucket(report, bucket)
 			if bucketJobs != nil {
-				log.Printf("Bucket %s/%s generated (%d) jobs", bucket.Bucketname, bucket.ReportPrefix, len(bucketJobs))
+				log.Printf("Bucket %s/%s generated (%d) jobs", bucket.Bucketname, bucket.ReportPath, len(bucketJobs))
 				toProcess = append(toProcess, bucketJobs...)
 			}
 			if err != nil {
-				log.Printf("Error generating jobs from bucket %s/%s: %s", bucket.Bucketname, bucket.ReportPrefix, err)
+				log.Printf("Error generating jobs from bucket %s/%s: %s", bucket.Bucketname, bucket.ReportPath, err)
 				if _, ok := reportErrors[report.ID]; !ok {
 					reportErrors[report.ID] = err
 				}
@@ -367,10 +367,10 @@ func (isc *IngestSvcContext) generateJobs(reports []*userdb.Report) ([]*manifest
 
 // generateJobsFomBucket is a helper to generateJobs which generates the jobs specific to a bucket
 func (isc *IngestSvcContext) generateJobsFomBucket(report *userdb.Report, bucket *userdb.Bucket) ([]*manifestJob, error) {
-	log.Printf("Listing reports from bucket: %s/%s", bucket.Bucketname, bucket.ReportPrefix)
-	billbuck, err := billingbucket.NewAWSBillingBucket(bucket.AWSAccessKeyID, bucket.AWSSecretAccessKey, bucket.Bucketname, bucket.Region, bucket.ReportPrefix)
+	log.Printf("Listing reports from bucket: %s/%s", bucket.Bucketname, bucket.ReportPath)
+	billbuck, err := billingbucket.NewAWSBillingBucket(bucket.AWSAccessKeyID, bucket.AWSSecretAccessKey, bucket.Bucketname, bucket.Region, bucket.ReportPath)
 	if err != nil {
-		errMsg := fmt.Sprintf("Could not access billing bucket %s (reportPrefix: %s): %s", bucket.Bucketname, bucket.ReportPrefix, err)
+		errMsg := fmt.Sprintf("Could not access billing bucket %s (reportPath: %s): %s", bucket.Bucketname, bucket.ReportPath, err)
 		log.Printf(errMsg)
 		return nil, err
 	}
@@ -524,7 +524,7 @@ func (isc *IngestSvcContext) doJob(job *manifestJob, run *bool) error {
 			break
 		}
 		if firstIteration {
-			err := repCtx.PurgeBillingPeriodSeries(job.billbuck.Bucket, job.billbuck.ReportPathPrefix, job.manifest.BillingPeriodString())
+			err := repCtx.PurgeBillingPeriodSeries(job.billbuck.Bucket, job.billbuck.ReportPath, job.manifest.BillingPeriodString())
 			if err != nil {
 				// If we can't purge previous billing series, do not continue with processing additional report keys.
 				// Otherwise, we will double count the data (from previous ingest) and the cost/usage will be over stated.
@@ -555,7 +555,7 @@ func (isc *IngestSvcContext) doJob(job *manifestJob, run *bool) error {
 	if !*run {
 		// Do not record a finish time. This will result in the report status remaining in "processing" status
 		log.Printf("Ingest interrupted during ingestion of report %s %s/%s/%s",
-			job.report.ID, job.bucket.Bucketname, job.bucket.ReportPrefix, job.manifest.BillingPeriodString())
+			job.report.ID, job.bucket.Bucketname, job.bucket.ReportPath, job.manifest.BillingPeriodString())
 	} else {
 		err = repCtx.RecordIngestFinish(*job.manifest)
 	}

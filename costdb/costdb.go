@@ -438,10 +438,10 @@ func (ctx *CostReportContext) DeleteReportData() error {
 	return err
 }
 
-// DeleteReportBillingBucketData deletes all report data for a specific billing bucket/report prefix
-func (ctx *CostReportContext) DeleteReportBillingBucketData(bucketname, reportPrefix string) error {
-	log.Printf("Deleting report data for %s (bucket: %s, reportPrefix: %s)", ctx.measurementName, bucketname, reportPrefix)
-	err := ctx.DeleteBillingBucketHistory(bucketname, reportPrefix)
+// DeleteReportBillingBucketData deletes all report data for a specific billing bucket/report path
+func (ctx *CostReportContext) DeleteReportBillingBucketData(bucketname, reportPath string) error {
+	log.Printf("Deleting report data for %s (bucket: %s, reportPath: %s)", ctx.measurementName, bucketname, reportPath)
+	err := ctx.DeleteBillingBucketHistory(bucketname, reportPath)
 	if err != nil {
 		// Influx sdk does not provide a constant for db not found
 		origErr := errors.Cause(err)
@@ -453,17 +453,17 @@ func (ctx *CostReportContext) DeleteReportBillingBucketData(bucketname, reportPr
 	_, err = ctx.CostDB.Query("DROP SERIES FROM \"%s\" WHERE \"%s\"='%s' AND \"%s\"='%s'",
 		ctx.measurementName,
 		parser.ColumnBillingBucket.ColumnName, bucketname,
-		parser.ColumnBillingReportPathPrefix.ColumnName, escapeSingleQuote(reportPrefix))
+		parser.ColumnBillingReportPath.ColumnName, escapeSingleQuote(reportPath))
 	return err
 }
 
 // PurgeBillingPeriodSeries will drop data points corresponding to the given billing period
 // This is desired for when current month's data needs to be replaced (new report is generated)
-func (ctx *CostReportContext) PurgeBillingPeriodSeries(bucketname, reportPrefix, billingPeriod string) error {
+func (ctx *CostReportContext) PurgeBillingPeriodSeries(bucketname, reportPath, billingPeriod string) error {
 	_, err := ctx.CostDB.Query("DROP SERIES FROM \"%s\" WHERE \"%s\"='%s' AND \"%s\"='%s' AND \"%s\"='%s'",
 		ctx.measurementName,
 		parser.ColumnBillingBucket.ColumnName, bucketname,
-		parser.ColumnBillingReportPathPrefix.ColumnName, escapeSingleQuote(reportPrefix),
+		parser.ColumnBillingReportPath.ColumnName, escapeSingleQuote(reportPath),
 		parser.ColumnBillingPeriod.ColumnName, billingPeriod)
 	return err
 }

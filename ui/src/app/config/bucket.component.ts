@@ -19,7 +19,7 @@ export class BucketComponent implements OnInit {
 
     public bucketId: string;
     public bucketname: string = '';
-    public report_prefix: string = '';
+    public report_path: string = '';
     public aws_access_key_id: string = '';
     public aws_secret_access_key: string = '';
 
@@ -53,7 +53,7 @@ export class BucketComponent implements OnInit {
     public async updateConfig() {
         let payload: Bucket = {
             bucketname: this.bucketname,
-            report_prefix: this.report_prefix,
+            report_path: this.report_path,
             aws_access_key_id: this.aws_access_key_id,
             aws_secret_access_key: this.aws_secret_access_key
         };
@@ -93,7 +93,7 @@ export class BucketComponent implements OnInit {
         this.bucketConfig = data;
         this.bucketId = this.bucketConfig.id;
         this.bucketname = this.bucketConfig.bucketname;
-        this.report_prefix = this.bucketConfig.report_prefix;
+        this.report_path = this.bucketConfig.report_path;
         this.aws_access_key_id = this.bucketConfig.aws_access_key_id;
         this.aws_secret_access_key = this.bucketConfig.aws_secret_access_key;
     }

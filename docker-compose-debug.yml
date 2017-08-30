@@ -25,7 +25,7 @@ services:
     env_file: 
     - ./config.env
   ingestd:
-    image: "claudia"
+    image: claudia
     entrypoint:
     - "sh"
     - "-c"

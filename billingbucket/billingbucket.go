@@ -27,11 +27,11 @@ var (
 
 // AWSBillingBucket is the object representation of a S3 bucket containing AWS Cost & Usage reports
 type AWSBillingBucket struct {
-	Bucket           string
-	Region           string
-	ReportPathPrefix string
-	Session          *session.Session
-	S3Client         *s3.S3
+	Bucket     string
+	Region     string
+	ReportPath string
+	Session    *session.Session
+	S3Client   *s3.S3
 
 	downloader *s3manager.Downloader
 }
@@ -95,8 +95,8 @@ func (mfst *Manifest) BillingPeriodString() string {
 	return fmt.Sprintf("%s-%s", strings.SplitN(mfst.BillingPeriod["start"], "T", 2)[0], strings.SplitN(mfst.BillingPeriod["end"], "T", 2)[0])
 }
 
-// ReportPathPrefix returns the reportPathPrefix from the reportKey (e.g. "report/path")
-func (mfst *Manifest) ReportPathPrefix() string {
+// ReportPath returns the reportPath from the reportKey (e.g. "report/path")
+func (mfst *Manifest) ReportPath() string {
 	for _, reportKey := range mfst.ReportKeys {
 		parts := strings.SplitN(reportKey, "/", 3)
 		return strings.Join(parts[0:2], "/")
@@ -161,11 +161,11 @@ func GetBucketRegion(bucket string) (string, error) {
 }
 
 // NewAWSBillingBucket returns an AWSBillingBucket
-func NewAWSBillingBucket(awsAccessKeyID, awsSecretAccessKey, bucket, region, reportPathPrefix string) (*AWSBillingBucket, error) {
+func NewAWSBillingBucket(awsAccessKeyID, awsSecretAccessKey, bucket, region, reportPath string) (*AWSBillingBucket, error) {
 	billbuck := AWSBillingBucket{}
 	billbuck.Bucket = bucket
 	billbuck.Region = region
-	billbuck.ReportPathPrefix = reportPathPrefix
+	billbuck.ReportPath = reportPath
 	log.Printf("Bucket '%s' located in region: %s", bucket, region)
 
 	cfg := aws.NewConfig()
@@ -177,7 +177,7 @@ func NewAWSBillingBucket(awsAccessKeyID, awsSecretAccessKey, bucket, region, rep
 	// RestProtocolURICleaning needs to be disabled because the SDK will call path.Clean()
 	// against S3 object keys, which is not what we want if the key starts with '/'.
 	// See: https://github.com/aws/aws-sdk-go/issues/970
-	// Object keys beginning with '/' can happen when the user omits setting a report prefix
+	// Object keys beginning with '/' can happen when the user omits setting a "report path prefix"
 	// when configuring their billing report.
 	cfg.DisableRestProtocolURICleaning = aws.Bool(true)
 
@@ -225,7 +225,7 @@ func (billbuck *AWSBillingBucket) ListDir(dir string) ([]string, error) {
 
 // GetManifestPaths returns the paths to all manifests in the bucket (e.g. report/path/20161201-20170101/hourly2-Manifest.json)
 func (billbuck *AWSBillingBucket) GetManifestPaths() ([]string, error) {
-	manifestDirs, err := billbuck.ListDir(billbuck.ReportPathPrefix)
+	manifestDirs, err := billbuck.ListDir(billbuck.ReportPath)
 	if err != nil {
 		return nil, err
 	}

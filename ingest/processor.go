@@ -76,9 +76,9 @@ func unzipReport(zipPath string) (string, error) {
 // shouldIngest checks whether or not we should ingest the report based on if
 // we have seen this manifest's billingPeriod/assemblyID before and it has been successfully processed
 func shouldIngest(repCtx *costdb.CostReportContext, manifest *billingbucket.Manifest) bool {
-	log.Printf("Determining if %s/%s/%s AssemblyID %s should be ingested", manifest.Bucket, manifest.ReportPathPrefix(), manifest.BillingPeriodString(), manifest.AssemblyID)
+	log.Printf("Determining if %s/%s/%s AssemblyID %s should be ingested", manifest.Bucket, manifest.ReportPath(), manifest.BillingPeriodString(), manifest.AssemblyID)
 	ingStatusByBillingPeriod := func() (*costdb.IngestStatus, error) {
-		return repCtx.CostDB.GetIngestStatusByBillingPeriod(manifest.Bucket, manifest.ReportPathPrefix(), manifest.BillingPeriodString())
+		return repCtx.CostDB.GetIngestStatusByBillingPeriod(manifest.Bucket, manifest.ReportPath(), manifest.BillingPeriodString())
 	}
 	ingStatusByAssemblyID := func() (*costdb.IngestStatus, error) {
 		return repCtx.CostDB.GetIngestStatus(manifest.AssemblyID)
@@ -110,7 +110,7 @@ func shouldIngest(repCtx *costdb.CostReportContext, manifest *billingbucket.Mani
 			return true
 		}
 	}
-	log.Printf("Ingest of %s/%s/%s AssemblyID %s already finished. Skipping ingest", manifest.Bucket, manifest.ReportPathPrefix(), manifest.BillingPeriodString(), manifest.AssemblyID)
+	log.Printf("Ingest of %s/%s/%s AssemblyID %s already finished. Skipping ingest", manifest.Bucket, manifest.ReportPath(), manifest.BillingPeriodString(), manifest.AssemblyID)
 	return false
 }
 
@@ -175,9 +175,9 @@ func IngestReportFile(repCtx *costdb.CostReportContext, job *manifestJob, report
 		}
 		// Add the line number as a nanosecond offset to ensure data points are not deduped by InfluxDB
 		lineItem.Timestamp = lineItem.Timestamp.Add(time.Duration(lineNum))
-		// Add billing bucket and report path prefix to the line item
+		// Add billing bucket and report path to the line item
 		lineItem.Tags[parser.ColumnBillingBucket.ColumnName] = job.bucket.Bucketname
-		lineItem.Tags[parser.ColumnBillingReportPathPrefix.ColumnName] = job.bucket.ReportPrefix
+		lineItem.Tags[parser.ColumnBillingReportPath.ColumnName] = job.bucket.ReportPath
 		lineItem.Tags[parser.ColumnBillingPeriod.ColumnName] = billingPeriodStr
 
 		pt, err := repCtx.NewPoint(lineItem.Tags, lineItem.Fields, lineItem.Timestamp)

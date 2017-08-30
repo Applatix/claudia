@@ -90,24 +90,24 @@ func maskAccessKey(awsAccessKeyID string) string {
 // validateBucket will verify the bucket and credentials are valid and sets its region
 func validateBucket(bucket *userdb.Bucket) error {
 	maskedAccessKey := maskAccessKey(bucket.AWSSecretAccessKey)
-	log.Printf("Validating Bucket: %s/%s, AccessKeyID: %s, SecretAccessKey: %s", bucket.Bucketname, bucket.ReportPrefix, bucket.AWSAccessKeyID, maskedAccessKey)
+	log.Printf("Validating Bucket: %s/%s, AccessKeyID: %s, SecretAccessKey: %s", bucket.Bucketname, bucket.ReportPath, bucket.AWSAccessKeyID, maskedAccessKey)
 	region, err := billingbucket.GetBucketRegion(bucket.Bucketname)
 	if err != nil {
 		return err
 	}
 	bucket.Region = region
-	billbuck, err := billingbucket.NewAWSBillingBucket(bucket.AWSAccessKeyID, bucket.AWSSecretAccessKey, bucket.Bucketname, bucket.Region, bucket.ReportPrefix)
+	billbuck, err := billingbucket.NewAWSBillingBucket(bucket.AWSAccessKeyID, bucket.AWSSecretAccessKey, bucket.Bucketname, bucket.Region, bucket.ReportPath)
 	if err != nil {
 		log.Printf("Could not create billing bucket: %s", err)
 		return err
 	}
-	dirContents, err := billbuck.ListDir(bucket.ReportPrefix)
+	dirContents, err := billbuck.ListDir(bucket.ReportPath)
 	if err != nil {
 		log.Printf("Failed to list billing bucket: %s", err)
 		return err
 	}
 	if len(dirContents) == 0 {
-		return errors.Errorf(errors.CodeBadRequest, "Bucket report path %s/%s empty or does not exist", bucket.Bucketname, bucket.ReportPrefix)
+		return errors.Errorf(errors.CodeBadRequest, "Bucket report path %s/%s empty or does not exist", bucket.Bucketname, bucket.ReportPath)
 	}
 	return nil
 }
@@ -341,7 +341,7 @@ func reportBucketsHandler(sc *server.ServerContext) func(http.ResponseWriter, *h
 				util.ErrorHandler(errors.New(errors.CodeBadRequest, "Invalid bucket JSON"), w)
 				return
 			}
-			bucketCreate.ReportPrefix = strings.TrimSpace(bucketCreate.ReportPrefix)
+			bucketCreate.ReportPath = strings.TrimSpace(bucketCreate.ReportPath)
 			bucketCreate.AWSAccessKeyID = strings.TrimSpace(bucketCreate.AWSAccessKeyID)
 			bucketCreate.AWSSecretAccessKey = strings.TrimSpace(bucketCreate.AWSSecretAccessKey)
 			err = validateBucket(&bucketCreate)
@@ -423,8 +423,8 @@ func reportBucketHandler(sc *server.ServerContext) func(http.ResponseWriter, *ht
 				util.TXErrorHandler(err, tx, w)
 				return
 			}
-			if bucketUpdates.ReportPrefix != "" && bucketUpdates.ReportPrefix != bucket.ReportPrefix {
-				err = errors.Errorf(errors.CodeForbidden, "Report prefixes cannot be changed")
+			if bucketUpdates.ReportPath != "" && bucketUpdates.ReportPath != bucket.ReportPath {
+				err = errors.Errorf(errors.CodeForbidden, "Report paths cannot be changed")
 				util.TXErrorHandler(err, tx, w)
 				return
 			}

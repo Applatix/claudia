@@ -22,13 +22,13 @@ func fetchReports(c *cli.Context) error {
 	awsAccessKeyID := c.String("awsAccessKeyID")
 	awsSecretAccessKey := c.String("awsSecretAccessKey")
 	s3bucket := c.String("bucket")
-	reportPathPrefix := c.String("reportPathPrefix")
+	reportPath := c.String("reportPath")
 	_ = c.BoolT("purgePrevious")
 
 	if reportDir == "" {
 		return errors.New("Local report dir unspecified")
 	}
-	if s3bucket == "" || reportPathPrefix == "" {
+	if s3bucket == "" || reportPath == "" {
 		return errors.New("S3 bucket and report path must be specified")
 	}
 
@@ -37,7 +37,7 @@ func fetchReports(c *cli.Context) error {
 		return err
 	}
 
-	_, err = billingbucket.NewAWSBillingBucket(awsAccessKeyID, awsSecretAccessKey, s3bucket, region, reportPathPrefix)
+	_, err = billingbucket.NewAWSBillingBucket(awsAccessKeyID, awsSecretAccessKey, s3bucket, region, reportPath)
 	if err != nil {
 		log.Printf("Could not access billing bucket: %s", err)
 		return err
@@ -158,7 +158,7 @@ func main() {
 				cli.StringFlag{Name: "bucket", Value: "", Usage: "Name of S3 bucket containing the reports"},
 				cli.StringFlag{Name: "awsAccessKeyId", Value: "", Usage: "AWS access key ID"},
 				cli.StringFlag{Name: "awsSecretAccessKey", Value: "", Usage: "AWS secret access key"},
-				cli.StringFlag{Name: "reportPathPrefix", Value: "", Usage: "Report path to reports (excluding date range)"},
+				cli.StringFlag{Name: "reportPath", Value: "", Usage: "Report path to reports (excluding date range)"},
 				cli.BoolTFlag{Name: "purgePrevious", Usage: "Purge any previous outdated reports"},
 			},
 			Action: fetchReports,

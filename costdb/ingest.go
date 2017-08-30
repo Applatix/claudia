@@ -18,15 +18,15 @@ import (
 
 // IngestStatus is the ingest status of a Manifest assembly
 type IngestStatus struct {
-	ReportID         string     `json:"report_id"`
-	AssemblyID       string     `json:"assembly_id"`
-	Bucket           string     `json:"bucket"`
-	ReportPathPrefix string     `json:"report_path_prefix"`
-	BillingPeriod    string     `json:"billing_period"`
-	ErrorMessage     string     `json:"error,omitempty"`
-	ParserVersion    int        `json:"parser_version"`
-	StartTime        *time.Time `json:"start_time"`
-	FinishTime       *time.Time `json:"finish_time"`
+	ReportID      string     `json:"report_id"`
+	AssemblyID    string     `json:"assembly_id"`
+	Bucket        string     `json:"bucket"`
+	ReportPath    string     `json:"report_path"`
+	BillingPeriod string     `json:"billing_period"`
+	ErrorMessage  string     `json:"error,omitempty"`
+	ParserVersion int        `json:"parser_version"`
+	StartTime     *time.Time `json:"start_time"`
+	FinishTime    *time.Time `json:"finish_time"`
 }
 
 // Ingest events
@@ -98,9 +98,9 @@ func (db *CostDatabase) GetReportIDs() ([]string, error) {
 }
 
 // GetIngestStatusByBillingPeriod returns the ingest status of a bucket and billing period
-func (db *CostDatabase) GetIngestStatusByBillingPeriod(bucket, reportPathPrefix, billingPeriod string) (*IngestStatus, error) {
-	results, err := db.Query("SELECT * FROM \"%s\" WHERE \"bucket\"='%s' AND \"reportPathPrefix\"='%s' AND \"billingPeriod\"='%s'",
-		claudia.IngestStatusMeasurementName, bucket, escapeSingleQuote(reportPathPrefix), billingPeriod)
+func (db *CostDatabase) GetIngestStatusByBillingPeriod(bucket, reportPath, billingPeriod string) (*IngestStatus, error) {
+	results, err := db.Query("SELECT * FROM \"%s\" WHERE \"bucket\"='%s' AND \"reportPath\"='%s' AND \"billingPeriod\"='%s'",
+		claudia.IngestStatusMeasurementName, bucket, escapeSingleQuote(reportPath), billingPeriod)
 	if err != nil {
 		return nil, err
 	}
@@ -135,8 +135,8 @@ func parseIngestSeries(series models.Row) (*IngestStatus, error) {
 				ingStatus.ReportID = colVal.(string)
 			case "bucket":
 				ingStatus.Bucket = colVal.(string)
-			case "reportPathPrefix":
-				ingStatus.ReportPathPrefix = colVal.(string)
+			case "reportPath":
+				ingStatus.ReportPath = colVal.(string)
 			case "billingPeriod":
 				ingStatus.BillingPeriod = colVal.(string)
 			case "assemblyId":
@@ -176,12 +176,12 @@ func (ctx *CostReportContext) GetReportBuckets() ([]*billingbucket.AWSBillingBuc
 		filters := map[string][]string{
 			parser.ColumnBillingBucket.ColumnName: []string{bucketName},
 		}
-		prefixes, err := ctx.TagValues(parser.ColumnBillingReportPathPrefix, filters)
+		reportPaths, err := ctx.TagValues(parser.ColumnBillingReportPath, filters)
 		if err != nil {
 			return nil, err
 		}
-		for _, prefix := range prefixes {
-			billbuck := billingbucket.AWSBillingBucket{Bucket: bucketName, ReportPathPrefix: prefix}
+		for _, reportPath := range reportPaths {
+			billbuck := billingbucket.AWSBillingBucket{Bucket: bucketName, ReportPath: reportPath}
 			buckets = append(buckets, &billbuck)
 		}
 	}
@@ -221,12 +221,12 @@ func (ctx *CostReportContext) DeleteAllIngestHistory() error {
 	return err
 }
 
-// DeleteBillingBucketHistory deletes all ingest history for the billing bucket & report prefix
+// DeleteBillingBucketHistory deletes all ingest history for the billing bucket & report path
 // Called when a report bucket has been deleted
-func (ctx *CostReportContext) DeleteBillingBucketHistory(bucketname, reportPrefix string) error {
-	log.Printf("Deleting ingest history for reportID %s bucket %s reportPathPrefix %s", ctx.ReportID, bucketname, reportPrefix)
-	query := fmt.Sprintf("DROP SERIES FROM %s WHERE \"reportId\" = '%s' AND \"bucket\" = '%s' AND \"reportPathPrefix\" = '%s'",
-		claudia.IngestStatusMeasurementName, ctx.ReportID, bucketname, escapeSingleQuote(reportPrefix))
+func (ctx *CostReportContext) DeleteBillingBucketHistory(bucketname, reportPath string) error {
+	log.Printf("Deleting ingest history for reportID %s bucket %s reportPath %s", ctx.ReportID, bucketname, reportPath)
+	query := fmt.Sprintf("DROP SERIES FROM %s WHERE \"reportId\" = '%s' AND \"bucket\" = '%s' AND \"reportPath\" = '%s'",
+		claudia.IngestStatusMeasurementName, ctx.ReportID, bucketname, escapeSingleQuote(reportPath))
 	_, err := ctx.CostDB.Query(query)
 	return err
 }
@@ -241,13 +241,13 @@ func (ctx *CostReportContext) DeleteAssemblyIngestHistory(assemblyID string) err
 	return err
 }
 
-// DeleteBillingPeriodIngestHistory deletes all ingest history for the billing bucket, report prefix, and billing period of this manifest
+// DeleteBillingPeriodIngestHistory deletes all ingest history for the billing bucket, report path, and billing period of this manifest
 // Called right before we process a monthly report (to ensure data is not counted twice when processing cumulative reports)
 func (ctx *CostReportContext) deleteBillingPeriodIngestHistory(manifest *billingbucket.Manifest) error {
-	log.Printf("Deleting ingest history for reportID %s bucket %s reportPathPrefix %s billingPeriod: %s",
-		ctx.ReportID, manifest.Bucket, manifest.ReportPathPrefix(), manifest.BillingPeriodString())
-	query := fmt.Sprintf("DROP SERIES FROM %s WHERE \"reportId\" = '%s' AND \"bucket\" = '%s' AND \"reportPathPrefix\" = '%s' AND \"billingPeriod\" = '%s'",
-		claudia.IngestStatusMeasurementName, ctx.ReportID, manifest.Bucket, escapeSingleQuote(manifest.ReportPathPrefix()), manifest.BillingPeriodString())
+	log.Printf("Deleting ingest history for reportID %s bucket %s reportPath %s billingPeriod: %s",
+		ctx.ReportID, manifest.Bucket, manifest.ReportPath(), manifest.BillingPeriodString())
+	query := fmt.Sprintf("DROP SERIES FROM %s WHERE \"reportId\" = '%s' AND \"bucket\" = '%s' AND \"reportPath\" = '%s' AND \"billingPeriod\" = '%s'",
+		claudia.IngestStatusMeasurementName, ctx.ReportID, manifest.Bucket, escapeSingleQuote(manifest.ReportPath()), manifest.BillingPeriodString())
 	_, err := ctx.CostDB.Query(query)
 	return err
 }
@@ -276,11 +276,11 @@ func (ctx *CostReportContext) RecordIngestError(manifest billingbucket.Manifest,
 
 func (ctx *CostReportContext) recordIngestHelper(manifest billingbucket.Manifest, event string, errorMsg string) error {
 	tags := map[string]string{
-		"reportId":         ctx.ReportID,
-		"assemblyId":       manifest.AssemblyID,
-		"bucket":           manifest.Bucket,
-		"reportPathPrefix": manifest.ReportPathPrefix(),
-		"billingPeriod":    manifest.BillingPeriodString(),
+		"reportId":      ctx.ReportID,
+		"assemblyId":    manifest.AssemblyID,
+		"bucket":        manifest.Bucket,
+		"reportPath":    manifest.ReportPath(),
+		"billingPeriod": manifest.BillingPeriodString(),
 	}
 	fields := map[string]interface{}{
 		"reportName":    manifest.ReportName,

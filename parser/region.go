@@ -41,7 +41,7 @@ var awsRegions = []AWSRegion{
 	AWSRegion{"sa-east-1", "SAE1", "South America (Sao Paulo)", ""},
 	AWSRegion{"ca-central-1", "CAN1", "Canada (Central)", ""},
 	//AWSRegion{"cn-north-1", "", "China (Beijing)", ""}, // TODO: Unknown region code
-	// Upcoming regions: Ningxia, Paris
+	// Upcoming regions: Ningxia, Paris, Sweden
 }
 
 // Generic, catch-all region in which regionless service charges (e.g. Route 53) can be applied

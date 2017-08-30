@@ -11,11 +11,11 @@
             </div>
         </div>
         <div class="ax-form-row columns small-6">
-            <label for="report_prefix">Report Prefix</label>
-            <input [attr.disabled]="bucketId ? true : null" class="ax-field" #reportPrefixField="ngModel" name="reportPrefixField" id="report_prefix" type="text" [(ngModel)]="report_prefix" required>
-            <div *ngIf="reportPrefixField.errors && reportPrefixField.dirty" class="ax-form-row__error-msg">
-                <div [hidden]="!reportPrefixField.errors.required">
-                    Report prefix is required.
+            <label for="report_path">Report Path</label>
+            <input [attr.disabled]="bucketId ? true : null" class="ax-field" #reportPathField="ngModel" name="reportPathField" id="report_path" type="text" [(ngModel)]="report_path" required>
+            <div *ngIf="reportPathField.errors && reportPathField.dirty" class="ax-form-row__error-msg">
+                <div [hidden]="!reportPathField.errors.required">
+                    Report path is required.
                 </div>
             </div>
         </div>
@@ -34,7 +34,7 @@
             <label for="aws_secret_access_key">AWS Secret Access Key</label>
             <input class="ax-field" #awsSecretField="ngModel" name="awsSecretField" id="aws_secret_access_key" type="password" [(ngModel)]="aws_secret_access_key" required>
             <div *ngIf="awsSecretField.errors && awsSecretField.dirty" class="ax-form-row__error-msg">
-                <div [hidden]="!reportPrefixField.errors.required">
+                <div [hidden]="!reportPathField.errors.required">
                     AWS Secret Access Key is required.
                 </div>
             </div>

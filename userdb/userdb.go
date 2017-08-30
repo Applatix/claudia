@@ -83,7 +83,7 @@ type Bucket struct {
 	CTime              time.Time `db:"ctime" json:"ctime"`
 	Bucketname         string    `db:"bucketname" json:"bucketname"`
 	Region             string    `db:"region" json:"region"`
-	ReportPrefix       string    `db:"report_prefix" json:"report_prefix"`
+	ReportPath         string    `db:"report_path" json:"report_path"`
 	AWSAccessKeyID     string    `db:"aws_access_key_id" json:"aws_access_key_id"`
 	AWSSecretAccessKey string    `db:"aws_secret_access_key" json:"aws_secret_access_key,omitempty"`
 }
@@ -107,10 +107,10 @@ func Open(datasource string) (*UserDatabase, error) {
 	return &userDB, nil
 }
 
-// GetBucket returns the bucket in this report's bucket list with the given name and report prefix
-func (r *Report) GetBucket(bucketname, reportPrefix string) *Bucket {
+// GetBucket returns the bucket in this report's bucket list with the given name and report path
+func (r *Report) GetBucket(bucketname, reportPath string) *Bucket {
 	for _, bucket := range r.Buckets {
-		if bucket.Bucketname == bucketname && bucket.ReportPrefix == reportPrefix {
+		if bucket.Bucketname == bucketname && bucket.ReportPath == reportPath {
 			return bucket
 		}
 	}
@@ -666,15 +666,15 @@ func (tx *Tx) AddBucket(reportID string, b *Bucket) (string, error) {
 		report_id,
 		bucketname,
 		region,
-		report_prefix,
+		report_path,
 		aws_access_key_id,
 		aws_secret_access_key
 	) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id;`
 	var id string
-	err := tx.QueryRow(sqlCreateBucket, reportID, b.Bucketname, b.Region, b.ReportPrefix, b.AWSAccessKeyID, b.AWSSecretAccessKey).Scan(&id)
+	err := tx.QueryRow(sqlCreateBucket, reportID, b.Bucketname, b.Region, b.ReportPath, b.AWSAccessKeyID, b.AWSSecretAccessKey).Scan(&id)
 	if err != nil {
 		if strings.Contains(err.Error(), "unique_s3path") {
-			return "", errors.Errorf(errors.CodeBadRequest, "Bucket '%s' with report prefix '%s' already configured", b.Bucketname, b.ReportPrefix)
+			return "", errors.Errorf(errors.CodeBadRequest, "Bucket '%s' with report path '%s' already configured", b.Bucketname, b.ReportPath)
 		}
 		return "", errors.InternalError(err)
 	}
@@ -682,7 +682,7 @@ func (tx *Tx) AddBucket(reportID string, b *Bucket) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	log.Printf("Added bucket %s/%s (bucket_id: %s) to report %s", b.Bucketname, b.ReportPrefix, id, reportID)
+	log.Printf("Added bucket %s/%s (bucket_id: %s) to report %s", b.Bucketname, b.ReportPath, id, reportID)
 	return id, nil
 }
 
@@ -708,7 +708,7 @@ func (tx *Tx) GetReportBuckets(reportID string) ([]*Bucket, error) {
 
 // UpdateBucket updates an existing bucket credentials
 func (tx *Tx) UpdateBucket(bucket Bucket) error {
-	rows, err := tx.NamedQuery("UPDATE bucket SET aws_access_key_id = :aws_access_key_id, aws_secret_access_key = :aws_secret_access_key, bucketname = :bucketname, region = :region, report_prefix = :report_prefix WHERE id = :id RETURNING report_id;", bucket)
+	rows, err := tx.NamedQuery("UPDATE bucket SET aws_access_key_id = :aws_access_key_id, aws_secret_access_key = :aws_secret_access_key, bucketname = :bucketname, region = :region, report_path = :report_path WHERE id = :id RETURNING report_id;", bucket)
 	if err != nil {
 		return errors.InternalError(err)
 	}
@@ -723,21 +723,21 @@ func (tx *Tx) UpdateBucket(bucket Bucket) error {
 		if err != nil {
 			return err
 		}
-		log.Printf("Updated bucket: bucketname: %s, reportPrefix: %s", bucket.Bucketname, bucket.ReportPrefix)
+		log.Printf("Updated bucket: bucketname: %s, reportPath: %s", bucket.Bucketname, bucket.ReportPath)
 	} else {
-		return errors.Errorf(errors.CodeNotFound, "Bucket %s, reportPrefix: %s not found", bucket.Bucketname, bucket.ReportPrefix)
+		return errors.Errorf(errors.CodeNotFound, "Bucket %s, reportPath: %s not found", bucket.Bucketname, bucket.ReportPath)
 	}
 	return nil
 }
 
 // DeleteBucket deletes a bucket from a report
 func (tx *Tx) DeleteBucket(bucket Bucket) error {
-	row := tx.QueryRow("DELETE FROM bucket WHERE bucketname = $1 AND report_prefix = $2 RETURNING report_id;", bucket.Bucketname, bucket.ReportPrefix)
+	row := tx.QueryRow("DELETE FROM bucket WHERE bucketname = $1 AND report_path = $2 RETURNING report_id;", bucket.Bucketname, bucket.ReportPath)
 	var reportID string
 	err := row.Scan(&reportID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			log.Printf("Delete of bucketname: %s, reportPrefix: %s ignored. Bucket does not exist", bucket.Bucketname, bucket.ReportPrefix)
+			log.Printf("Delete of bucketname: %s, reportPath: %s ignored. Bucket does not exist", bucket.Bucketname, bucket.ReportPath)
 			return nil
 		}
 		return errors.InternalError(err)
@@ -746,7 +746,7 @@ func (tx *Tx) DeleteBucket(bucket Bucket) error {
 	if err != nil {
 		return err
 	}
-	log.Printf("Deleted bucket with bucketname: %s, reportPrefix: %s", bucket.Bucketname, bucket.ReportPrefix)
+	log.Printf("Deleted bucket with bucketname: %s, reportPath: %s", bucket.Bucketname, bucket.ReportPath)
 	return nil
 }
 

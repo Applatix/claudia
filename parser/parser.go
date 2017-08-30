@@ -61,18 +61,18 @@ var (
 	ColumnDescription            = Column{"lineItem/LineItemDescription", "", "", asMeta} // m4.large Linux/UNIX Spot Instance-hour in US East (Virginia) in VPC Zone #1
 
 	// Claudia specific DB columns
-	ColumnBillingPeriod           = Column{"claudia/BillingPeriod", "", "", nil}                                    // 20161201-20170101
-	ColumnBillingBucket           = Column{"claudia/BillingBucket", "", "", nil}                                    // my-billing-bucket
-	ColumnBillingReportPathPrefix = Column{"claudia/BillingReportPathPrefix", "", "", nil}                          // report/path
-	ColumnService                 = Column{"claudia/Service", "services", "Services", nil}                          // * AWS EC2 Instance
-	ColumnS3Bucket                = Column{"claudia/S3Bucket", "s3buckets", "Buckets", nil}                         // * my-billing-bucket
-	ColumnUsageFamily             = Column{"claudia/UsageFamily", "usagefamilies", "Usage Family", nil}             // * Requests-Tier1, AWS-Out-Bytes, NatGateway-Bytes
-	ColumnRegion                  = Column{"claudia/Region", "regions", "Regions", nil}                             // * us-east-1, us-east-2
-	ColumnEC2InstancePricing      = Column{"claudia/EC2Pricing", "instancepricing", "Instance Pricing", nil}        // * OnDemand, Reserved, Spot
-	ColumnEC2InstanceFamily       = Column{"claudia/EC2InstanceFamily", "instancefamilies", "Instance Family", nil} // * m3
-	ColumnEC2InstanceType         = Column{"claudia/EC2InstanceType", "instancetypes", "Instance Type", nil}        // * m3.large
-	ColumnDataTransferSource      = Column{"claudia/DataTransferSource", "txsource", "Data Transfer Source", nil}   // * External, us-west-1
-	ColumnDataTransferDest        = Column{"claudia/DataTransferDest", "txdest", "Data Transfer Dest", nil}         // * External, us-west-1
+	ColumnBillingPeriod      = Column{"claudia/BillingPeriod", "", "", nil}                                    // 20161201-20170101
+	ColumnBillingBucket      = Column{"claudia/BillingBucket", "", "", nil}                                    // my-billing-bucket
+	ColumnBillingReportPath  = Column{"claudia/BillingReportPath", "", "", nil}                                // report/path
+	ColumnService            = Column{"claudia/Service", "services", "Services", nil}                          // * AWS EC2 Instance
+	ColumnS3Bucket           = Column{"claudia/S3Bucket", "s3buckets", "Buckets", nil}                         // * my-billing-bucket
+	ColumnUsageFamily        = Column{"claudia/UsageFamily", "usagefamilies", "Usage Family", nil}             // * Requests-Tier1, AWS-Out-Bytes, NatGateway-Bytes
+	ColumnRegion             = Column{"claudia/Region", "regions", "Regions", nil}                             // * us-east-1, us-east-2
+	ColumnEC2InstancePricing = Column{"claudia/EC2Pricing", "instancepricing", "Instance Pricing", nil}        // * OnDemand, Reserved, Spot
+	ColumnEC2InstanceFamily  = Column{"claudia/EC2InstanceFamily", "instancefamilies", "Instance Family", nil} // * m3
+	ColumnEC2InstanceType    = Column{"claudia/EC2InstanceType", "instancetypes", "Instance Type", nil}        // * m3.large
+	ColumnDataTransferSource = Column{"claudia/DataTransferSource", "txsource", "Data Transfer Source", nil}   // * External, us-west-1
+	ColumnDataTransferDest   = Column{"claudia/DataTransferDest", "txdest", "Data Transfer Dest", nil}         // * External, us-west-1
 )
 
 // Add all columns to internal array to be used to build up lookup tables during init()
@@ -103,10 +103,10 @@ var columns = []Column{
 	ColumnProductLocation,
 	ColumnDescription,
 
-	// Custom columns
+	// Claudia columns
 	ColumnBillingPeriod,
 	ColumnBillingBucket,
-	ColumnBillingReportPathPrefix,
+	ColumnBillingReportPath,
 	ColumnService,
 	ColumnS3Bucket,
 	ColumnUsageFamily,
