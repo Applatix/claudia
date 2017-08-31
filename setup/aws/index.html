@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
         
-        
+        <link rel="canonical" href="https://applatix.github.io/claudia/setup/aws/">
         <link rel="shortcut icon" href="../../img/favicon.ico">
 
 	<title>AWS - Claudia Docs</title>
@@ -123,6 +123,15 @@
                     </a>
                 </li>
                 
+                <li>
+                    <a href="https://github.com/applatix/claudia/">
+                        
+                            <i class="fa fa-github"></i>
+                        
+                        GitHub
+                    </a>
+                </li>
+                
             </ul>
         </div>
     </div>
@@ -134,15 +143,15 @@
     
         <li class="main active"><a href="#setting-up-aws-for-claudia">Setting Up AWS for Claudia</a></li>
         
-            <li><a href="#step-1-configure-destination-s3-bucket">Step 1 Configure Destination S3 Bucket</a></li>
+            <li><a href="#step-1-configure-destination-s3-bucket">Step 1: Configure Destination S3 Bucket</a></li>
         
-            <li><a href="#step-2-enable-cost-and-usage-reports">Step 2 Enable Cost and Usage Reports</a></li>
+            <li><a href="#step-2-enable-cost-and-usage-reports">Step 2: Enable Cost and Usage Reports</a></li>
         
-            <li><a href="#step-3-create-policy-for-claudia">Step 3 Create Policy for Claudia</a></li>
+            <li><a href="#step-3-create-policy-for-claudia">Step 3: Create Policy for Claudia</a></li>
         
-            <li><a href="#step-4-create-claudia-user-access-credentials">Step 4 Create Claudia User &amp; Access Credentials</a></li>
+            <li><a href="#step-4-create-claudia-user-access-credentials">Step 4: Create Claudia User &amp; Access Credentials</a></li>
         
-            <li><a href="#step-5-enable-cost-allocation-tags-optional">Step 5 Enable Cost Allocation Tags (Optional)</a></li>
+            <li><a href="#step-5-enable-cost-allocation-tags-optional">Step 5: Enable Cost Allocation Tags (Optional)</a></li>
         
     
     </ul>
@@ -155,7 +164,7 @@ for delivery to your S3 bucket, and creating the access credentials and policy
 so Claudia can access the report data.</p>
 <p>When you complete these steps, go to
 <a href="../claudia">Claudia setup</a> to configure your application.</p>
-<h3 id="step-1-configure-destination-s3-bucket">Step 1 Configure Destination S3 Bucket</h3>
+<h3 id="step-1-configure-destination-s3-bucket">Step 1: Configure Destination S3 Bucket</h3>
 <ul>
 <li>
 <p>Create a new bucket (or select an existing one). AWS lets you upload Cost &amp; Usage reports to an S3 bucket of your choice.</p>
@@ -196,7 +205,7 @@ so Claudia can access the report data.</p>
 
 </code></pre>
 
-<h3 id="step-2-enable-cost-and-usage-reports">Step 2 Enable Cost and Usage Reports</h3>
+<h3 id="step-2-enable-cost-and-usage-reports">Step 2: Enable Cost and Usage Reports</h3>
 <ul>
 <li>
 <p>Log in with your AWS payer account and visit the <a href="https://console.aws.amazon.com/billing/home#/reports">Reports</a> section from billing management. </p>
@@ -224,7 +233,7 @@ so Claudia can access the report data.</p>
 <li>Click Next. </li>
 </ul>
 <p>After enabling the report for the first time, it will take up to 24 hours before the first report is delivered. AWS delivers new reports at least once a day.</p>
-<h3 id="step-3-create-policy-for-claudia">Step 3 Create Policy for Claudia</h3>
+<h3 id="step-3-create-policy-for-claudia">Step 3: Create Policy for Claudia</h3>
 <ul>
 <li>
 <p>Navigate to the <a href="https://console.aws.amazon.com/iam/home#/policies">Policies</a> page under Identity and Access Management (IAM).</p>
@@ -261,7 +270,7 @@ as well other permissions needed by the application (NOTE: Replace <code>example
 }
 </code></pre>
 
-<h3 id="step-4-create-claudia-user-access-credentials">Step 4 Create Claudia User &amp; Access Credentials</h3>
+<h3 id="step-4-create-claudia-user-access-credentials">Step 4: Create Claudia User &amp; Access Credentials</h3>
 <ul>
 <li>Navigate to the IAM <a href="https://console.aws.amazon.com/iam/home#/users">Users</a> section.</li>
 <li>Create a new user by entering a User name and check the box to enable "Programmatic access."</li>
@@ -281,7 +290,7 @@ as well other permissions needed by the application (NOTE: Replace <code>example
 <blockquote>
 <p><img alt="Copy Credentials" src="../aws/copy-credentials.png" /></p>
 </blockquote>
-<h3 id="step-5-enable-cost-allocation-tags-optional">Step 5 Enable Cost Allocation Tags (Optional)</h3>
+<h3 id="step-5-enable-cost-allocation-tags-optional">Step 5: Enable Cost Allocation Tags (Optional)</h3>
 <p>AWS allows you to enable resource tags to appear in your Cost &amp; Usage reports as additional columns in the report. Claudia automatically detects these tags and enables additional dimensions in the UI to group or filter by. </p>
 <p>To enable resource tags in your billing report, go to the "Cost Allocation Tags" section in billing managment. Under this section, AWS provides an useful <code>createdBy</code> tag to track the creator of various resources. You can activate this tag with one click:</p>
 <blockquote>
