@@ -1,13 +1,15 @@
 site_name: Claudia Docs
+site_url: https://applatix.github.io/claudia/
 theme: yeti
 copyright: Copyright &copy; 2017 <a href="https://www.applatix.com">Applatix</a>
+repo_url: https://github.com/applatix/claudia/
 strict: true
 pages:
 - Home: 'index.md'
 - Setup:
-    - AWS: 'setup/aws.md'
-    - Claudia: 'setup/claudia.md'
+  - AWS: 'setup/aws.md'
+  - Claudia: 'setup/claudia.md'
 - FAQ: 'faq.md'
 - About:
-    - 'Release Notes': 'about/release-notes.md'
-    - 'Contact': 'about/contact.md'
+  - 'Release Notes': 'about/release-notes.md'
+  - 'Contact': 'about/contact.md'

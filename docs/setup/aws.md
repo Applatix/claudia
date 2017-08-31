@@ -7,7 +7,7 @@ so Claudia can access the report data.
 When you complete these steps, go to
 [Claudia setup](claudia) to configure your application.
 
-### Step 1 Configure Destination S3 Bucket
+### Step 1: Configure Destination S3 Bucket
 
 
 * Create a new bucket (or select an existing one). AWS lets you upload Cost & Usage reports to an S3 bucket of your choice.
@@ -47,7 +47,7 @@ When you complete these steps, go to
 	
 ```
 
-### Step 2 Enable Cost and Usage Reports
+### Step 2: Enable Cost and Usage Reports
 
 
 * Log in with your AWS payer account and visit the [Reports](https://console.aws.amazon.com/billing/home#/reports) section from billing management. 
@@ -68,7 +68,7 @@ When you complete these steps, go to
 
 After enabling the report for the first time, it will take up to 24 hours before the first report is delivered. AWS delivers new reports at least once a day.
 
-### Step 3 Create Policy for Claudia
+### Step 3: Create Policy for Claudia
 
 * Navigate to the [Policies](https://console.aws.amazon.com/iam/home#/policies) page under Identity and Access Management (IAM).
 
@@ -103,7 +103,7 @@ as well other permissions needed by the application (NOTE: Replace `example-bill
 }
 ```
 
-### Step 4 Create Claudia User & Access Credentials
+### Step 4: Create Claudia User & Access Credentials
 
 * Navigate to the IAM [Users](https://console.aws.amazon.com/iam/home#/users) section.
 * Create a new user by entering a User name and check the box to enable "Programmatic access."
@@ -118,7 +118,7 @@ as well other permissions needed by the application (NOTE: Replace `example-bill
 
  > ![Copy Credentials](aws/copy-credentials.png)
 
-### Step 5 Enable Cost Allocation Tags (Optional)
+### Step 5: Enable Cost Allocation Tags (Optional)
 
 AWS allows you to enable resource tags to appear in your Cost & Usage reports as additional columns in the report. Claudia automatically detects these tags and enables additional dimensions in the UI to group or filter by. 
 

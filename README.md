@@ -92,17 +92,17 @@ pip install mkdocs mkdocs-bootswatch
 
 ### Editing and previewing changes
 
+Edit `mkdocs.yml` to change layout, headers, theme and other global settings. Edit markdown files under the `docs` directory to update and add new content.
+
 Run the mkdocs server and visit [http://localhost:8000](http://localhost:8000) to preview your changes.
 
 ```
 mkdocs serve
 ```
 
-Edit `mkdocs.yml` to change layout, headers, theme and other global settings. Edit markdown files under the `docs` directory to update and add new content.
-
 ### Publishing
 
-Build the docs, which will generate static HTML into the `./site/` directory. Commit the contents of `./site/ ` into the `gh-pages` branch to reflect on the [Claudia project page](https://applatix.github.io/claudia).
+Run `mkdocs gh-deploy` to generate the static HTML and automatically push the contents into the `gh-pages` branch to reflect on the [Claudia project page](https://applatix.github.io/claudia).
 ```
-./build.py -c docs
+mkdocs gh-deploy
 ```
